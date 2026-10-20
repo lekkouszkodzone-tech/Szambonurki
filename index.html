@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <link rel="manifest" href="./manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Szambonurki</title>
@@ -332,11 +331,9 @@
   let viewMonth = new Date().getMonth();
   const MAX_WORK_SECONDS = 8 * 3600;
 
+  // POPRAWIONA FUNKCJA: Zawsze pobiera realną, dzisiejszą datę systemową bez cofania do wczoraj
   function getRealDateKey(customDate = null) {
     let d = customDate ? new Date(customDate) : new Date();
-    if (!customDate && d.getHours() < 7) {
-      d.setDate(d.getDate() - 1);
-    }
     return d.toISOString().split('T')[0];
   }
 
@@ -835,3 +832,4 @@
 
 </body>
 </html>
+
