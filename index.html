@@ -367,7 +367,7 @@
       state.activeDayKey = st.activeDayKey || getRealDateKey();
     }
     
-    // WARUNEK: Przeliczaj czas w tle TYLKO JEŚLI na dany dzień w kalendarzu jest zaplanowana zmiana (1, 2, 3 lub Urlop)
+    // SPRAWDZENIE WARUNKU ZMIANY I PRZELICZENIE CZASU W TLE
     let currentRealDay = getRealDateKey();
     let scheduledShift = state.shifts[currentRealDay];
     let hasValidShiftToday = scheduledShift && scheduledShift !== 'Wolne';
@@ -391,11 +391,18 @@
       const btn = document.getElementById('startBtn');
       btn.textContent = 'PAUZA';
       btn.classList.add('running');
+      if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(tick, 1000);
-    } else if (state.isRunning && !hasValidShiftToday) {
-      // Jeśli minął dzień lub nie ma wpisanej zmiany w grafiku, automatycznie zatrzymujemy licznik w tle
-      state.isRunning = false;
+    } else {
+      // Jeśli brak poprawnej zmiany lub licznik był wyłączony, zatrzymujemy go
+      if (state.isRunning && !hasValidShiftToday) {
+        state.isRunning = false;
+      }
       state.lastTick = null;
+      if (timerInterval) clearInterval(timerInterval);
+      const btn = document.getElementById('startBtn');
+      btn.textContent = 'START ZMIANY';
+      btn.classList.remove('running');
     }
 
     if (state.activeDayKey !== currentRealDay) {
@@ -458,7 +465,7 @@
       baseSalary: parseFloat(document.getElementById('baseSalary').value) || 0,
       scheduledHours: parseFloat(document.getElementById('scheduledHours').value) || 168,
       bonus: parseFloat(document.getElementById('bonus').value) || 0,
-      nightBonus: parseFloat(document.getElementById('nightBonus').value) || 0,
+      nightBonus: parseFloat(document.getElementById('nightBonus').value) || 5.50,
       incBonus: document.getElementById('incBonus').checked,
       ot50: document.getElementById('ot50').checked,
       ot100: document.getElementById('ot100').checked
@@ -531,11 +538,13 @@
     if (state.isRunning) {
       state.lastTick = Date.now();
       btn.textContent = 'PAUZA'; btn.classList.add('running');
+      if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(tick, 1000);
     } else {
       tick();
       btn.textContent = 'START ZMIANY'; btn.classList.remove('running');
-      clearInterval(timerInterval);
+      if (timerInterval) clearInterval(timerInterval);
+      state.lastTick = null;
     }
     updateUI(); saveState();
   }
