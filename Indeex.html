@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Szambonurki</title>
-<link rel="manifest" href="./manifest.json">
-<style>
-  :root {
-    --bg: #121212;
-    --card: #1e1e1e;
-    --green: #00e676;
-    --text: #ffffff;
+
     --muted: #aaaaaa;
   }
   * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -220,7 +208,7 @@
 </div>
 
 <details class="settings">
-  <summary style="font-size: 16px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+  <summary style="font-size: 
     <span>⚙️ Ustawienia wypłaty i stawek</span>
     <span style="font-size: 12px; color: var(--green);">▼ Rozwiń</span>
   </summary>
@@ -354,45 +342,4 @@
     const savedState = localStorage.getItem('szambonurki_state');
     if (savedState) {
       const st = JSON.parse(savedState);
-      state.activeCat = st.activeCat || 'Praca';
-      state.liveMode = st.liveMode || 'brutto';
-      if (st.seconds) {
-        categories.forEach(c => { if(st.seconds[c.id] !== undefined) state.seconds[c.id] = st.seconds[c.id]; });
-      }
-      if (st.earned) {
-        categories.forEach(c => { if(st.earned[c.id] !== undefined) state.earned[c.id] = st.earned[c.id]; });
-      }
-      state.historyEarned = st.historyEarned || {};
-      state.historySeconds = st.historySeconds || {};
-      state.shifts = st.shifts || {};
-      state.activeDayKey = st.activeDayKey || getRealDateKey();
-    }
-    
-    let currentRealDay = getRealDateKey();
-    if (state.activeDayKey !== currentRealDay) {
-      let shiftTotal = Object.values(state.earned).reduce((a,b)=>a+b, 0);
-      if (shiftTotal > 0) {
-        state.historyEarned[state.activeDayKey] = {...state.earned};
-        state.historySeconds[state.activeDayKey] = {...state.seconds};
-      }
-      categories.forEach(c => {
-        state.seconds[c.id] = 0;
-        state.earned[c.id] = 0;
-      });
-      state.activeDayKey = currentRealDay;
-      checkAutoStartShift(currentRealDay);
-      saveState();
-    } else {
-      let totalSec = Object.values(state.seconds).reduce((a,b)=>a+b, 0);
-      if (!state.isRunning && totalSec === 0) {
-        checkAutoStartShift(currentRealDay);
-      }
-    }
-
-    setLiveMode(state.liveMode, false);
-    renderCalendar();
-  }
-
-  function checkAutoStartShift(dayKey) {
-    let shift = state.shifts[dayKey];
-    if (shift && shift !== 'Wolne')
+      state.activeCat = st.activeCat || 
