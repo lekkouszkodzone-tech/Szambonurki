@@ -331,7 +331,6 @@
   let viewMonth = new Date().getMonth();
   const MAX_WORK_SECONDS = 8 * 3600;
 
-  // POPRAWIONA FUNKCJA: Zawsze pobiera realną, dzisiejszą datę systemową bez cofania do wczoraj
   function getRealDateKey(customDate = null) {
     let d = customDate ? new Date(customDate) : new Date();
     return d.toISOString().split('T')[0];
@@ -354,6 +353,8 @@
       const st = JSON.parse(savedState);
       state.activeCat = st.activeCat || 'Praca';
       state.liveMode = st.liveMode || 'brutto';
+      state.isRunning = st.isRunning || false;
+      state.lastTick = st.lastTick || null;
       if (st.seconds) {
         categories.forEach(c => { if(st.seconds[c.id] !== undefined) state.seconds[c.id] = st.seconds[c.id]; });
       }
@@ -366,7 +367,37 @@
       state.activeDayKey = st.activeDayKey || getRealDateKey();
     }
     
+    // WARUNEK: Przeliczaj czas w tle TYLKO JEŚLI na dany dzień w kalendarzu jest zaplanowana zmiana (1, 2, 3 lub Urlop)
     let currentRealDay = getRealDateKey();
+    let scheduledShift = state.shifts[currentRealDay];
+    let hasValidShiftToday = scheduledShift && scheduledShift !== 'Wolne';
+
+    if (state.isRunning && state.lastTick && hasValidShiftToday) {
+      const now = Date.now();
+      const elapsedSec = (now - state.lastTick) / 1000;
+      if (elapsedSec > 0) {
+        let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
+        let allowedSec = Math.min(elapsedSec, MAX_WORK_SECONDS - totalSec);
+        if (allowedSec > 0) {
+          let perSecRateBrutto = getHourlyRate(false) / 3600;
+          let cat = state.activeCat;
+          if (state.seconds[cat] !== undefined) {
+            state.seconds[cat] += allowedSec;
+            state.earned[cat] += (perSecRateBrutto * allowedSec);
+          }
+        }
+      }
+      state.lastTick = now;
+      const btn = document.getElementById('startBtn');
+      btn.textContent = 'PAUZA';
+      btn.classList.add('running');
+      timerInterval = setInterval(tick, 1000);
+    } else if (state.isRunning && !hasValidShiftToday) {
+      // Jeśli minął dzień lub nie ma wpisanej zmiany w grafiku, automatycznie zatrzymujemy licznik w tle
+      state.isRunning = false;
+      state.lastTick = null;
+    }
+
     if (state.activeDayKey !== currentRealDay) {
       let shiftTotal = Object.values(state.earned).reduce((a,b)=>a+b, 0);
       if (shiftTotal > 0) {
@@ -438,9 +469,16 @@
 
   function saveState() {
     localStorage.setItem('szambonurki_state', JSON.stringify({
-      activeCat: state.activeCat, liveMode: state.liveMode,
-      seconds: state.seconds, earned: state.earned,
-      historyEarned: state.historyEarned, historySeconds: state.historySeconds, shifts: state.shifts, activeDayKey: state.activeDayKey
+      isRunning: state.isRunning,
+      activeCat: state.activeCat, 
+      liveMode: state.liveMode,
+      seconds: state.seconds, 
+      earned: state.earned,
+      historyEarned: state.historyEarned, 
+      historySeconds: state.historySeconds, 
+      shifts: state.shifts, 
+      activeDayKey: state.activeDayKey,
+      lastTick: state.lastTick
     }));
   }
 
@@ -487,57 +525,43 @@
     else { updateUI(); saveState(); }
   }
 
-    let timerInterval = null;
-
   function toggleTimer() {
     state.isRunning = !state.isRunning;
     const btn = document.getElementById('startBtn');
     if (state.isRunning) {
-      state.lastTick = Date.now(); // Zapisujemy dokładny moment startu
-      btn.textContent = 'PAUZA'; 
-      btn.classList.add('running');
+      state.lastTick = Date.now();
+      btn.textContent = 'PAUZA'; btn.classList.add('running');
       timerInterval = setInterval(tick, 1000);
     } else {
-      tick(); // Doliczamy zaległy czas przed zatrzymaniem
-      btn.textContent = 'START ZMIANY'; 
-      btn.classList.remove('running');
+      tick();
+      btn.textContent = 'START ZMIANY'; btn.classList.remove('running');
       clearInterval(timerInterval);
     }
-    updateUI(); 
-    saveState();
+    updateUI(); saveState();
+  }
 
-      function tick() {
+  function tick() {
     if (!state.isRunning) return;
-    
-    const now = Date.now();
-    const deltaSec = (now - state.lastTick) / 1000; // Realny czas, który upłynął (nawet w tle)
-    state.lastTick = now; // Aktualizujemy punkt odniesienia
-
+    const now = Date.now(), deltaSec = (now - state.lastTick) / 1000;
+    state.lastTick = now;
     if (deltaSec <= 0) return;
 
-    let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
-    if (totalSec >= MAX_WORK_SECONDS && state.isRunning) { 
-      toggleTimer(); 
-      return; 
-    }
+    let totalSec = Object.values(state.seconds).reduce((a,b)=>a+b, 0);
+    if (totalSec >= MAX_WORK_SECONDS && state.isRunning) { toggleTimer(); return; }
     
     let d = new Date(), h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
     if ((h === 14 && m === 59 && s === 59) || (h === 22 && m === 59 && s === 59) || (h === 6 && m === 59 && s === 59)) {
       if (state.isRunning) toggleTimer();
     }
+    if (totalSec >= MAX_WORK_SECONDS) { if (state.isRunning) toggleTimer(); return; }
 
-    let perSecRateBrutto = getHourlyRate(false) / 3600;
-    let cat = state.activeCat;
-    
+    let perSecRateBrutto = getHourlyRate(false) / 3600, cat = state.activeCat;
     if (state.seconds[cat] !== undefined) {
       state.seconds[cat] += deltaSec;
       state.earned[cat] += (perSecRateBrutto * deltaSec);
     }
-    
-    saveState(); 
-    updateUI();
+    saveState(); updateUI();
   }
-
 
   function confirmReset() {
     document.getElementById('confirmResetModal').style.display = 'flex';
@@ -850,4 +874,3 @@
 
 </body>
 </html>
-
