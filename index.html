@@ -487,39 +487,57 @@
     else { updateUI(); saveState(); }
   }
 
+    let timerInterval = null;
+
   function toggleTimer() {
     state.isRunning = !state.isRunning;
     const btn = document.getElementById('startBtn');
     if (state.isRunning) {
-      state.lastTick = Date.now();
-      btn.textContent = 'PAUZA'; btn.classList.add('running');
+      state.lastTick = Date.now(); // Zapisujemy dokładny moment startu
+      btn.textContent = 'PAUZA'; 
+      btn.classList.add('running');
       timerInterval = setInterval(tick, 1000);
     } else {
-      btn.textContent = 'START ZMIANY'; btn.classList.remove('running');
+      tick(); // Doliczamy zaległy czas przed zatrzymaniem
+      btn.textContent = 'START ZMIANY'; 
+      btn.classList.remove('running');
       clearInterval(timerInterval);
     }
-    updateUI(); saveState();
-  }
+    updateUI(); 
+    saveState();
 
-  function tick() {
-    const now = Date.now(), deltaSec = (now - state.lastTick) / 1000;
-    state.lastTick = now;
-    let totalSec = Object.values(state.seconds).reduce((a,b)=>a+b, 0);
-    if (totalSec >= MAX_WORK_SECONDS && state.isRunning) { toggleTimer(); return; }
+      function tick() {
+    if (!state.isRunning) return;
+    
+    const now = Date.now();
+    const deltaSec = (now - state.lastTick) / 1000; // Realny czas, który upłynął (nawet w tle)
+    state.lastTick = now; // Aktualizujemy punkt odniesienia
+
+    if (deltaSec <= 0) return;
+
+    let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
+    if (totalSec >= MAX_WORK_SECONDS && state.isRunning) { 
+      toggleTimer(); 
+      return; 
+    }
     
     let d = new Date(), h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
     if ((h === 14 && m === 59 && s === 59) || (h === 22 && m === 59 && s === 59) || (h === 6 && m === 59 && s === 59)) {
       if (state.isRunning) toggleTimer();
     }
-    if (totalSec >= MAX_WORK_SECONDS) { if (state.isRunning) toggleTimer(); return; }
 
-    let perSecRateBrutto = getHourlyRate(false) / 3600, cat = state.activeCat;
+    let perSecRateBrutto = getHourlyRate(false) / 3600;
+    let cat = state.activeCat;
+    
     if (state.seconds[cat] !== undefined) {
       state.seconds[cat] += deltaSec;
       state.earned[cat] += (perSecRateBrutto * deltaSec);
     }
-    saveState(); updateUI();
+    
+    saveState(); 
+    updateUI();
   }
+
 
   function confirmReset() {
     document.getElementById('confirmResetModal').style.display = 'flex';
