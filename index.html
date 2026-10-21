@@ -118,7 +118,7 @@
   .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
   .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
 
-  /* Styl dla porównania z celebrytami */
+  /* Styl dla porównania z celebrytami i kierownikiem */
   .celeb-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
   .celeb-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 10px; color: #ffeb3b; }
   .celeb-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; font-family: monospace; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px; }
@@ -263,7 +263,7 @@
     </div>
     <div class="row">
       <div class="input-group">
-        <label>Premia (zł)</label>
+        <label>Pseudo premia (zł)</label>
         <input type="password" id="bonus" value="300" oninput="saveAndRecalc()">
       </div>
       <div class="input-group">
@@ -273,7 +273,7 @@
     </div>
 
     <div class="switch-row">
-      <span>Uwzględnij premię w wyliczeniach</span>
+      <span>Uwzględnij pseudo premię w wyliczeniach</span>
       <input type="checkbox" id="incBonus" checked onchange="saveAndRecalc()">
     </div>
     <div class="switch-row">
@@ -312,13 +312,14 @@
   </div>
 </div>
 
-<!-- PORÓWNANIE Z CELEBRYTAMI NA SAMYM DOLE -->
+<!-- PORÓWNANIE Z CELEBRYTAMI I KIEROWNIKIEM NA SAMYM DOLE -->
 <div class="celeb-section">
   <h2>🚀 Licznik zarobków (od otwarcia strony)</h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Jeff Bezos:</span> <span id="celebBezos" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Cristiano Ronaldo:</span> <span id="celebRonaldo" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Robert Lewandowski:</span> <span id="celebLewy" style="color: var(--green);">0.00 zł</span></div>
+  <div class="celeb-row"><span>Kierownik (12k netto):</span> <span id="celebKierownik" style="color: var(--green);">0.00 zł</span></div>
 </div>
 
 <script>
@@ -506,11 +507,13 @@
     const bezosPerSec = 450000;
     const ronaldoPerSec = 25.36;
     const lewyPerSec = 3.80;
+    const kierownikPerSec = 12000 / (168 * 3600);
 
     document.getElementById('celebMusk').textContent = (elapsedSec * muskPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
     document.getElementById('celebBezos').textContent = (elapsedSec * bezosPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
     document.getElementById('celebRonaldo').textContent = (elapsedSec * ronaldoPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
     document.getElementById('celebLewy').textContent = (elapsedSec * lewyPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
+    document.getElementById('celebKierownik').textContent = (elapsedSec * kierownikPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
   }
 
   function checkAutoStartShift(dayKey) {
