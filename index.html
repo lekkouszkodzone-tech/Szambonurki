@@ -178,29 +178,29 @@
     <div class="shift-select-btn" onclick="setDayShift('2')"><span>II Zmiana (15:00 - 22:59)</span> 🔵</div>
     <div class="shift-select-btn" onclick="setDayShift('3')"><span>III Zmiana Nocna (23:00 - 06:59)</span> 🟣</div>
     <div class="shift-select-btn" onclick="setDayShift('Urlop')"><span>Urlop (Cała dniówka)</span> 🌴</div>
-    <div class="shift-select-btn" onclick="openEditDayEarnModal()" style="border-color:#00e676; background:rgba(0,230,118,0.1);"><span>✏️ Edytuj zarobki dnia (kategorie)</span> 💰</div>
+    <div class="shift-select-btn" onclick="openEditDayTimeModal()" style="border-color:#00e676; background:rgba(0,230,118,0.1);"><span>⏱️ Edytuj czas dnia (godziny)</span> ⏳</div>
     <div class="shift-select-btn" onclick="setDayShift('Wolne')" style="border-color:#d32f2f;"><span>Dzień wolny / Brak</span> ❌</div>
     <button class="btn-action" style="width:100%; margin-top:10px; background:#444;" onclick="closeModal('dayModal')">Zamknij</button>
   </div>
 </div>
 
-<!-- MODAL RĘCZNEJ KOREKTY ZAROBKÓW DNIA (KATEGORIE) -->
-<div class="modal" id="editDayEarnModal">
+<!-- MODAL RĘCZNEJ KOREKTY CZASU DNIA (KATEGORIE) -->
+<div class="modal" id="editDayTimeModal">
   <div class="modal-content">
-    <h3 id="editDayEarnTitle">Zarobki dnia</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz kwoty dla kategorii:</p>
+    <h3 id="editDayTimeTitle">Czas dnia</h3>
+    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz przepracowane godziny:</p>
     
     <div class="row" style="margin-bottom: 6px;">
-      <div class="input-group"><label style="color:#d32f2f;">Praca (zł)</label><input type="number" id="editCatPraca" step="0.01" value="0"></div>
-      <div class="input-group"><label style="color:#e040fb;">Przerwa (zł)</label><input type="number" id="editCatPrzerwa" step="0.01" value="0"></div>
+      <div class="input-group"><label style="color:#d32f2f;">Praca (godz.)</label><input type="number" id="editTimePraca" step="0.1" min="0" value="0"></div>
+      <div class="input-group"><label style="color:#e040fb;">Przerwa (godz.)</label><input type="number" id="editTimePrzerwa" step="0.1" min="0" value="0"></div>
     </div>
     <div class="row" style="margin-bottom: 12px;">
-      <div class="input-group"><label style="color:#18ffff;">Telefon (zł)</label><input type="number" id="editCatTelefon" step="0.01" value="0"></div>
-      <div class="input-group"><label style="color:#448aff;">WC (zł)</label><input type="number" id="editCatWC" step="0.01" value="0"></div>
+      <div class="input-group"><label style="color:#18ffff;">Telefon (godz.)</label><input type="number" id="editTimeTelefon" step="0.1" min="0" value="0"></div>
+      <div class="input-group"><label style="color:#448aff;">WC (godz.)</label><input type="number" id="editTimeWC" step="0.1" min="0" value="0"></div>
     </div>
 
-    <button class="btn-action" style="width:100%; margin-top:6px; background:#2e7d32;" onclick="saveDayEarnings()">Zapisz kategorie</button>
-    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editDayEarnModal')">Anuluj</button>
+    <button class="btn-action" style="width:100%; margin-top:6px; background:#2e7d32;" onclick="saveDayTimeEarnings()">Zapisz i przelicz</button>
+    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editDayTimeModal')">Anuluj</button>
   </div>
 </div>
 
@@ -645,52 +645,56 @@
     closeModal('editTimeModal');
   }
 
-  function openEditDayEarnModal() {
+  function openEditDayTimeModal() {
     closeModal('dayModal');
     if (!selectedModalDate) return;
-    document.getElementById('editDayEarnTitle').textContent = `Zarobki dnia: ${selectedModalDate}`;
-    let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
-    let sourceMap = {};
-
+    document.getElementById('editDayTimeTitle').textContent = `Czas dnia: ${selectedModalDate}`;
+    
+    let sourceSecMap = {};
     if (selectedModalDate === state.activeDayKey) {
-      sourceMap = state.earned;
-    } else if (state.historyEarned[selectedModalDate]) {
-      sourceMap = state.historyEarned[selectedModalDate];
-    } else if (state.shifts[selectedModalDate] === 'Urlop') {
-      let rate = getHourlyRate(false, state.shifts[selectedModalDate] === '3') * mult;
-      sourceMap = { 'Praca': rate * 8, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
+      sourceSecMap = state.seconds;
+    } else if (state.historySeconds[selectedModalDate]) {
+      sourceSecMap = state.historySeconds[selectedModalDate];
     } else {
-      sourceMap = { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
+      sourceSecMap = { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
     }
 
-    document.getElementById('editCatPraca').value = ((sourceMap['Praca'] || 0) * mult).toFixed(2);
-    document.getElementById('editCatPrzerwa').value = ((sourceMap['Przerwa'] || 0) * mult).toFixed(2);
-    document.getElementById('editCatTelefon').value = ((sourceMap['Telefon'] || 0) * mult).toFixed(2);
-    document.getElementById('editCatWC').value = ((sourceMap['WC'] || 0) * mult).toFixed(2);
+    document.getElementById('editTimePraca').value = ((sourceSecMap['Praca'] || 0) / 3600).toFixed(1);
+    document.getElementById('editTimePrzerwa').value = ((sourceSecMap['Przerwa'] || 0) / 3600).toFixed(1);
+    document.getElementById('editTimeTelefon').value = ((sourceSecMap['Telefon'] || 0) / 3600).toFixed(1);
+    document.getElementById('editTimeWC').value = ((sourceSecMap['WC'] || 0) / 3600).toFixed(1);
 
-    document.getElementById('editDayEarnModal').style.display = 'flex';
+    document.getElementById('editDayTimeModal').style.display = 'flex';
   }
 
-  function saveDayEarnings() {
+  function saveDayTimeEarnings() {
     if (!selectedModalDate) return;
-    let mult = state.liveMode === 'netto' ? (1 / 0.72) : 1.0;
 
-    let pVal = (parseFloat(document.getElementById('editCatPraca').value) || 0) * mult;
-    let prVal = (parseFloat(document.getElementById('editCatPrzerwa').value) || 0) * mult;
-    let tVal = (parseFloat(document.getElementById('editCatTelefon').value) || 0) * mult;
-    let wVal = (parseFloat(document.getElementById('editCatWC').value) || 0) * mult;
+    let pSec = (parseFloat(document.getElementById('editTimePraca').value) || 0) * 3600;
+    let prSec = (parseFloat(document.getElementById('editTimePrzerwa').value) || 0) * 3600;
+    let tSec = (parseFloat(document.getElementById('editTimeTelefon').value) || 0) * 3600;
+    let wSec = (parseFloat(document.getElementById('editTimeWC').value) || 0) * 3600;
 
-    let newMap = { 'Praca': pVal, 'Przerwa': prVal, 'Telefon': tVal, 'WC': wVal };
+    let newSecMap = { 'Praca': pSec, 'Przerwa': prSec, 'Telefon': tSec, 'WC': wSec };
+    let perSecRateBrutto = getHourlyRate(false) / 3600;
+    let newEarnedMap = {
+      'Praca': pSec * perSecRateBrutto,
+      'Przerwa': prSec * perSecRateBrutto,
+      'Telefon': tSec * perSecRateBrutto,
+      'WC': wSec * perSecRateBrutto
+    };
 
     if (selectedModalDate === state.activeDayKey) {
-      state.earned = newMap;
+      state.seconds = newSecMap;
+      state.earned = newEarnedMap;
     } else {
-      state.historyEarned[selectedModalDate] = newMap;
+      state.historySeconds[selectedModalDate] = newSecMap;
+      state.historyEarned[selectedModalDate] = newEarnedMap;
     }
     saveState();
     renderCalendar();
     updateUI();
-    closeModal('editDayEarnModal');
+    closeModal('editDayTimeModal');
   }
 
   function changeMonth(direction) {
