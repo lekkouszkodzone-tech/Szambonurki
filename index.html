@@ -117,6 +117,7 @@
   .summary-box { background: #121212; border: 1px solid #333; border-radius: 10px; padding: 12px; }
   .summary-box h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--green); border-bottom: 1px solid #333; padding-bottom: 4px; display: flex; justify-content: space-between; }
   .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
+  .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -397,10 +398,29 @@
     let scheduledShift = state.shifts[currentRealDay];
     let hasValidShiftToday = scheduledShift && scheduledShift !== 'Wolne';
 
+    // Przeliczanie w tle Z DOKŁADNYMI RAMAMI ZMIAN (I: 07:00-14:59, II: 15:00-22:59, III: 23:00-06:59)
     if (state.isRunning && state.lastTick && hasValidShiftToday) {
       const now = Date.now();
-      const elapsedSec = (now - state.lastTick) / 1000;
-      if (elapsedSec > 0) {
+      let nowTime = new Date(now);
+      
+      let startCheckTime = new Date(nowTime);
+      startCheckTime.setHours(7, 0, 0, 0);
+      
+      let shiftEndTime = new Date(nowTime);
+      if (scheduledShift === '1') {
+        shiftEndTime.setHours(14, 59, 59, 0);
+      } else if (scheduledShift === '2') {
+        shiftEndTime.setHours(22, 59, 59, 0);
+      } else if (scheduledShift === '3') {
+        shiftEndTime.setHours(6, 59, 59, 0);
+      } else {
+        shiftEndTime.setHours(15, 0, 0, 0);
+      }
+
+      let effectiveNow = Math.min(now, shiftEndTime.getTime());
+      const elapsedSec = (effectiveNow - state.lastTick) / 1000;
+      
+      if (elapsedSec > 0 && nowTime.getTime() >= startCheckTime.getTime()) {
         let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
         let allowedSec = Math.min(elapsedSec, MAX_WORK_SECONDS - totalSec);
         if (allowedSec > 0) {
@@ -412,18 +432,27 @@
           }
         }
       }
-      state.lastTick = now;
-      const btn = document.getElementById('startBtn');
-      btn.textContent = 'PAUZA';
-      btn.classList.add('running');
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(tick, 1000);
+
+      if (now >= shiftEndTime.getTime() || Object.values(state.seconds).reduce((a, b) => a + b, 0) >= MAX_WORK_SECONDS) {
+        state.isRunning = false;
+        state.lastTick = null;
+      } else {
+        state.lastTick = now;
+      }
     } else {
       if (state.isRunning && !hasValidShiftToday) {
         state.isRunning = false;
       }
       state.lastTick = null;
-      if (timerInterval) clearInterval(timerInterval);
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    if (state.isRunning) {
+      const btn = document.getElementById('startBtn');
+      btn.textContent = 'PAUZA';
+      btn.classList.add('running');
+      timerInterval = setInterval(tick, 1000);
+    } else {
       const btn = document.getElementById('startBtn');
       btn.textContent = 'START ZMIANY';
       btn.classList.remove('running');
@@ -463,7 +492,6 @@
         state.seconds['Praca'] = MAX_WORK_SECONDS;
       } else {
         state.activeCat = 'Praca';
-        if (!state.isRunning) toggleTimer();
       }
     }
   }
@@ -851,36 +879,58 @@
     state.historyEarned[dayKey] = {...state.earned};
     state.historySeconds[dayKey] = {...state.seconds};
 
-    let allDays = {};
+    let allDaysEarned = {};
     Object.keys(state.historyEarned).forEach(dKey => {
       let mapE = state.historyEarned[dKey];
       if (mapE) {
         let dayObj = {};
         Object.keys(mapE).forEach(cat => dayObj[cat] = mapE[cat]);
-        allDays[dKey] = dayObj;
+        allDaysEarned[dKey] = dayObj;
+      }
+    });
+
+    let allDaysSeconds = {};
+    Object.keys(state.historySeconds).forEach(dKey => {
+      let mapS = state.historySeconds[dKey];
+      if (mapS) {
+        let dayObj = {};
+        Object.keys(mapS).forEach(cat => dayObj[cat] = mapS[cat]);
+        allDaysSeconds[dKey] = dayObj;
       }
     });
 
     Object.keys(state.shifts).forEach(d => {
-      if (!allDays[d]) {
+      if (!allDaysEarned[d]) {
         let shiftType = state.shifts[d];
         if (shiftType === 'Urlop') {
           let isNightShift = (shiftType === '3');
-          let uRate = getHourlyRate(false, isNightShift) * 8;
-          allDays[d] = { 'Praca': uRate, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
+          let uRate = getHourlyRate(false, isNightShift) * mult;
+          allDaysEarned[d] = { 'Praca': uRate, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
+          allDaysSeconds[d] = { 'Praca': 8 * 3600, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
         }
       }
     });
 
     function aggregateDays(dateList) {
-      let totals = { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 };
+      let totals = { 
+        earned: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 },
+        seconds: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 }
+      };
       dateList.forEach(k => {
-        let dayMap = allDays[k];
-        if (dayMap) {
-          Object.keys(dayMap).forEach(cat => {
-            let val = (dayMap[cat] || 0) * mult;
-            totals[cat] += val;
-            totals.total += val;
+        let dayMapE = allDaysEarned[k];
+        if (dayMapE) {
+          Object.keys(dayMapE).forEach(cat => {
+            let val = (dayMapE[cat] || 0) * mult;
+            totals.earned[cat] += val;
+            totals.earned.total += val;
+          });
+        }
+        let dayMapS = allDaysSeconds[k];
+        if (dayMapS) {
+          Object.keys(dayMapS).forEach(cat => {
+            let sec = (dayMapS[cat] || 0);
+            totals.seconds[cat] += sec;
+            totals.seconds.total += sec;
           });
         }
       });
@@ -888,7 +938,10 @@
     }
 
     let now = new Date();
-    let statsObj = { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 };
+    let statsObj = { 
+      earned: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 },
+      seconds: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 }
+    };
     let titleText = '';
 
     if (window.summaryType === 'week') {
@@ -915,7 +968,7 @@
       while (targetMonth < 0) { targetMonth += 12; targetYear--; }
 
       let monthDays = [];
-      Object.keys(allDays).forEach(k => {
+      Object.keys(allDaysEarned).forEach(k => {
         let p = k.split('-');
         if (parseInt(p[0]) === targetYear && parseInt(p[1])-1 === targetMonth) {
           monthDays.push(k);
@@ -928,7 +981,7 @@
     } else if (window.summaryType === 'year') {
       let targetYear = now.getFullYear() + window.summaryOffset;
       let yearDays = [];
-      Object.keys(allDays).forEach(k => {
+      Object.keys(allDaysEarned).forEach(k => {
         let p = k.split('-');
         if (parseInt(p[0]) === targetYear) {
           yearDays.push(k);
@@ -939,10 +992,18 @@
     }
 
     document.getElementById('summaryTitle').textContent = titleText;
-    document.getElementById('sumPeriodTotal').textContent = statsObj.total.toFixed(2) + ' zł';
+    document.getElementById('sumPeriodTotal').textContent = statsObj.earned.total.toFixed(2) + ' zł';
+    
     let periodHtml = '';
     categories.forEach(c => {
-      periodHtml += `<div class="sum-row"><span style="color:${c.color}">${c.id}:</span> <span>${statsObj[c.id].toFixed(2)} zł</span></div>`;
+      let amt = statsObj.earned[c.id].toFixed(2);
+      let timeStr = formatTime(statsObj.seconds[c.id]);
+      periodHtml += `
+        <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
+          <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${amt} zł</span></div>
+          <div class="sum-time-sub">Czas: ${timeStr}</div>
+        </div>
+      `;
     });
     document.getElementById('sumPeriodDetails').innerHTML = periodHtml;
   }
