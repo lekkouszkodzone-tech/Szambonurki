@@ -55,6 +55,18 @@
     font-size: 15px; font-weight: bold; border-radius: 24px; cursor: pointer; flex: 1; min-width: 130px;
   }
   .btn-main.running { background-color: #d32f2f; }
+
+  /* Humorystyczny boks dzisiejszego dnia */
+  .daily-joke-box {
+    background: rgba(255, 235, 59, 0.08);
+    border: 1px dashed rgba(255, 235, 59, 0.4);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .daily-joke-box h4 { margin: 0 0 4px 0; font-size: 12px; color: #ffeb3b; text-transform: uppercase; letter-spacing: 0.5px; }
+  .daily-joke-box p { margin: 0; font-size: 13px; color: #eee; font-style: italic; }
   
   .section-title { font-size: 12px; font-weight: bold; color: var(--muted); text-align: center; margin-bottom: 10px; text-transform: uppercase; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
@@ -126,7 +138,7 @@
   /* Styl dla wydruku PDF */
   @media print {
     body { background: #fff !important; color: #000 !important; padding: 0; }
-    .header-btns, .counter-buttons, .mode-selector, .settings, .edit-btn, details, .schedule-section, .celeb-section, .grid { display: none !important; }
+    .header-btns, .counter-buttons, .mode-selector, .settings, .edit-btn, details, .schedule-section, .celeb-section, .grid, .daily-joke-box { display: none !important; }
     .summary-section { border: none !important; background: #fff !important; padding: 0 !important; }
     .summary-box { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; }
     .sum-row span { color: #000 !important; }
@@ -160,6 +172,12 @@
   <div class="counter-buttons">
     <button class="btn-main" id="startBtn" onclick="toggleTimer()">START ZMIANY</button>
   </div>
+</div>
+
+<!-- CODZIENNE HUMORYSTYCZNE PODSUMOWANIE -->
+<div class="daily-joke-box">
+  <h4>💡 Refleksja Dnia</h4>
+  <p id="dailyJokeText">Ładowanie mądrości szambonurka...</p>
 </div>
 
 <div class="section-title">Co teraz robisz? (Kliknij kafelek, aby przełączyć, lub ✏️ by edytować czas)</div>
@@ -382,6 +400,23 @@
   let viewMonth = new Date().getMonth();
   const MAX_WORK_SECONDS = 8 * 3600;
 
+  // Baza humorystycznych tekstów zmienianych codziennie
+  const dailyJokes = [
+    "Dzisiaj Twoje wizyty w WC generują czysty zysk. Kto bogatemu zabroni?",
+    "Telefon w dłoni to nie praca na gapę, to strategiczny lobbying!",
+    "Szambo nurkuje, a Ty płyniesz po milion. Trzymaj tak dalej!",
+    "Praca uszlachetnia, ale przerwa i telefon dają najwyższe stopy zwrotu.",
+    "Każda minuta spędzona na kiblu to inwestycja w Twój wewnętrzny spokój (i budżet).",
+    "Głowa do góry! Elon Musk może i ma SpaceX, ale czy zarabia na kiblu tyle co Ty?",
+    "Woda w oczyszczalni płynie, a Twoje statystyki rosną jak na drożdżach."
+  ];
+
+  function setDailyJoke() {
+    let dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    let jokeIndex = dayOfYear % dailyJokes.length;
+    document.getElementById('dailyJokeText').textContent = `„${dailyJokes[jokeIndex]}”`;
+  }
+
   function getRealDateKey(customDate = null) {
     let d = customDate ? new Date(customDate) : new Date();
     if (!customDate && d.getHours() < 7) {
@@ -391,6 +426,7 @@
   }
 
   function loadSettings() {
+    setDailyJoke();
     const saved = localStorage.getItem('szambonurki_settings');
     if (saved) {
       const s = JSON.parse(saved);
