@@ -112,16 +112,26 @@
   .switch-row input[type="checkbox"] { transform: scale(1.3); accent-color: var(--green); }
 
   .summary-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
-  .summary-section h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .summary-section h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
   .summary-box { background: #121212; border: 1px solid #333; border-radius: 10px; padding: 12px; }
   .summary-box h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--green); border-bottom: 1px solid #333; padding-bottom: 4px; display: flex; justify-content: space-between; }
   .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
   .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
 
-  /* Styl dla porównania z celebrytami i kierownikiem */
+  /* Styl dla porównania z celebrytami */
   .celeb-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
   .celeb-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 10px; color: #ffeb3b; }
   .celeb-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; font-family: monospace; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px; }
+
+  /* Styl dla wydruku PDF */
+  @media print {
+    body { background: #fff !important; color: #000 !important; padding: 0; }
+    .header-btns, .counter-buttons, .mode-selector, .settings, .edit-btn, details, .schedule-section, .celeb-section, .grid { display: none !important; }
+    .summary-section { border: none !important; background: #fff !important; padding: 0 !important; }
+    .summary-box { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; }
+    .sum-row span { color: #000 !important; }
+    #sumPeriodTotal { color: #000 !important; }
+  }
 </style>
 </head>
 <body>
@@ -131,6 +141,7 @@
     <h1>Szambonurki</h1>
   </div>
   <div class="header-btns">
+    <button class="btn-action" onclick="window.print()">🖨️ PDF</button>
     <button class="btn-action" onclick="confirmReset()">Reset</button>
   </div>
 </div>
@@ -294,9 +305,12 @@
 <div class="summary-section">
   <h2>
     <span id="summaryTitle">Podsumowanie</span>
-    <div class="month-nav">
-      <button onclick="changeSummaryOffset(-1)">◀</button>
-      <button onclick="changeSummaryOffset(1)">▶</button>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <button class="btn-action" style="padding: 4px 8px; font-size: 11px;" onclick="window.print()">🖨️ PDF</button>
+      <div class="month-nav">
+        <button onclick="changeSummaryOffset(-1)">◀</button>
+        <button onclick="changeSummaryOffset(1)">▶</button>
+      </div>
     </div>
   </h2>
   
@@ -312,14 +326,13 @@
   </div>
 </div>
 
-<!-- PORÓWNANIE Z CELEBRYTAMI I KIEROWNIKIEM NA SAMYM DOLE -->
+<!-- PORÓWNANIE Z CELEBRYTAMI NA SAMYM DOLE -->
 <div class="celeb-section">
   <h2>🚀 Licznik zarobków (od otwarcia strony)</h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Jeff Bezos:</span> <span id="celebBezos" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Cristiano Ronaldo:</span> <span id="celebRonaldo" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Robert Lewandowski:</span> <span id="celebLewy" style="color: var(--green);">0.00 zł</span></div>
-  <div class="celeb-row"><span>Kierownik (12k netto):</span> <span id="celebKierownik" style="color: var(--green);">0.00 zł</span></div>
 </div>
 
 <script>
@@ -507,13 +520,11 @@
     const bezosPerSec = 450000;
     const ronaldoPerSec = 25.36;
     const lewyPerSec = 3.80;
-    const kierownikPerSec = 12000 / (168 * 3600);
 
     document.getElementById('celebMusk').textContent = (elapsedSec * muskPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
     document.getElementById('celebBezos').textContent = (elapsedSec * bezosPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
     document.getElementById('celebRonaldo').textContent = (elapsedSec * ronaldoPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
     document.getElementById('celebLewy').textContent = (elapsedSec * lewyPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
-    document.getElementById('celebKierownik').textContent = (elapsedSec * kierownikPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
   }
 
   function checkAutoStartShift(dayKey) {
