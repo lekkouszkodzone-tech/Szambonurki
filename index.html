@@ -111,13 +111,18 @@
   .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #2a2a2a; font-size: 14px; }
   .switch-row input[type="checkbox"] { transform: scale(1.3); accent-color: var(--green); }
 
-  .summary-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
+  .summary-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
   .summary-section h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
   .summary-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
   .summary-box { background: #121212; border: 1px solid #333; border-radius: 10px; padding: 12px; }
   .summary-box h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--green); border-bottom: 1px solid #333; padding-bottom: 4px; display: flex; justify-content: space-between; }
   .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
   .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
+
+  /* Styl dla porównania z celebrytami */
+  . celeb-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
+  .celeb-section h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; color: #ffeb3b; }
+  .celeb-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; font-family: monospace; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -164,49 +169,4 @@
     <div class="cal-header-day">Wt</div>
     <div class="cal-header-day">Śr</div>
     <div class="cal-header-day">Cz</div>
-    <div class="cal-header-day">Pt</div>
-    <div class="cal-header-day">So</div>
-    <div class="cal-header-day">Nd</div>
-  </div>
-  <div class="calendar-grid" id="calDays"></div>
-</div>
-
-<!-- MODAL GRAFIKU DNIA -->
-<div class="modal" id="dayModal">
-  <div class="modal-content">
-    <h3 id="modalTitle">Wybierz zmianę na dzień</h3>
-    <div class="shift-select-btn" onclick="setDayShift('1')"><span>I Zmiana (07:00 - 14:59)</span> 🟢</div>
-    <div class="shift-select-btn" onclick="setDayShift('2')"><span>II Zmiana (15:00 - 22:59)</span> 🔵</div>
-    <div class="shift-select-btn" onclick="setDayShift('3')"><span>III Zmiana Nocna (23:00 - 06:59)</span> 🟣</div>
-    <div class="shift-select-btn" onclick="setDayShift('Urlop')"><span>Urlop (Cała dniówka)</span> 🌴</div>
-    <div class="shift-select-btn" onclick="openEditDayTimeModal()" style="border-color:#00e676; background:rgba(0,230,118,0.1);"><span>⏱️ Edytuj czas dnia (godziny)</span> ⏳</div>
-    <div class="shift-select-btn" onclick="setDayShift('Wolne')" style="border-color:#d32f2f;"><span>Dzień wolny / Brak</span> ❌</div>
-    <button class="btn-action" style="width:100%; margin-top:10px; background:#444;" onclick="closeModal('dayModal')">Zamknij</button>
-  </div>
-</div>
-
-<!-- MODAL RĘCZNEJ KOREKTY CZASU DNIA (KATEGORIE) -->
-<div class="modal" id="editDayTimeModal">
-  <div class="modal-content">
-    <h3 id="editDayTimeTitle">Czas dnia</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz przepracowane godziny:</p>
-    
-    <div class="row" style="margin-bottom: 6px;">
-      <div class="input-group"><label style="color:#d32f2f;">Praca (godz.)</label><input type="number" id="editTimePraca" step="0.1" min="0" value="0"></div>
-      <div class="input-group"><label style="color:#e040fb;">Przerwa (godz.)</label><input type="number" id="editTimePrzerwa" step="0.1" min="0" value="0"></div>
-    </div>
-    <div class="row" style="margin-bottom: 12px;">
-      <div class="input-group"><label style="color:#18ffff;">Telefon (godz.)</label><input type="number" id="editTimeTelefon" step="0.1" min="0" value="0"></div>
-      <div class="input-group"><label style="color:#448aff;">WC (godz.)</label><input type="number" id="editTimeWC" step="0.1" min="0" value="0"></div>
-    </div>
-
-    <button class="btn-action" style="width:100%; margin-top:6px; background:#2e7d32;" onclick="saveDayTimeEarnings()">Zapisz i przelicz</button>
-    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editDayTimeModal')">Anuluj</button>
-  </div>
-</div>
-
-<!-- MODAL RĘCZNEJ KOREKTY CZASU -->
-<div class="modal" id="editTimeModal">
-  <div class="modal-content">
-    <h3 id="editModalTitle">Korekta czasu</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:
+    <div class="cal-header-day">Pt
