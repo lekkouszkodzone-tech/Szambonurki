@@ -160,10 +160,10 @@
     <button class="mode-btn" id="modeBruttoBtn" onclick="setLiveMode('brutto')">BRUTTO</button>
     <button class="mode-btn active" id="modeNettoBtn" onclick="setLiveMode('netto')">NETTO</button>
   </div>
-  <div class="label" id="modeLabel">ZAROBIONO NA: PRACA (NETTO)</div>
+  <div class="label" id="modeLabel">CZAS AKTYWNY: PRACA</div>
   <div class="amount" id="totalEarned">0.0000 PLN</div>
   <div class="sub">
-    Czas zmiany: <span id="totalTime">00:00:00</span> | Stawka: <span id="hourlyRate" style="-webkit-text-security:disc;">0.00</span> zł/h
+    Czas zmiany: <span id="totalTime">00:00:00</span> <span id="rateWrapper">| Stawka: <span id="hourlyRate" style="-webkit-text-security:disc;">0.00</span> zł/h</span>
   </div>
   
   <div class="counter-buttons">
@@ -298,6 +298,10 @@
     </div>
 
     <div class="switch-row">
+      <span>Ukryj kwoty (pokazuj tylko czas)</span>
+      <input type="checkbox" id="hideEarnings" onchange="toggleHideEarnings()">
+    </div>
+    <div class="switch-row">
       <span>Uwzględnij pseudo premię w wyliczeniach</span>
       <input type="checkbox" id="incBonus" checked onchange="saveAndRecalc()">
     </div>
@@ -335,12 +339,12 @@
   </div>
 
   <div class="summary-box">
-    <h3><span>Suma okresu</span><span id="sumPeriodTotal" style="color:var(--green); font-size:16px;">0.00 zł</span></h3>
+    <h3><span id="sumPeriodHeader">Suma okresu</span><span id="sumPeriodTotal" style="color:var(--green); font-size:16px;">0.00 zł</span></h3>
     <div id="sumPeriodDetails"></div>
   </div>
 </div>
 
-<div class="celeb-section">
+<div class="celeb-section" id="celebBox">
   <h2>🚀 Licznik zarobków (od otwarcia strony)</h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Jeff Bezos:</span> <span id="celebBezos" style="color: var(--green);">0.00 zł</span></div>
@@ -377,6 +381,7 @@
     isRunning: false,
     activeCat: 'Praca',
     liveMode: 'netto',
+    hideEarnings: false,
     seconds: { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0 },
     earned: { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0 },
     historyEarned: {}, 
@@ -419,6 +424,12 @@
     return d.toISOString().split('T')[0];
   }
 
+  function toggleHideEarnings() {
+    state.hideEarnings = document.getElementById('hideEarnings').checked;
+    saveState();
+    updateUI();
+  }
+
   function loadSettings() {
     setDailyJoke();
     const saved = localStorage.getItem('szambonurki_settings');
@@ -437,6 +448,7 @@
       const st = JSON.parse(savedState);
       state.activeCat = st.activeCat || 'Praca';
       state.liveMode = st.liveMode || 'netto';
+      state.hideEarnings = st.hideEarnings || false;
       state.isRunning = st.isRunning || false;
       state.lastTick = st.lastTick || null;
       if (st.seconds) {
@@ -453,6 +465,8 @@
       state.activeDayKey = getRealDateKey();
     }
     
+    document.getElementById('hideEarnings').checked = state.hideEarnings;
+
     let currentRealDay = getRealDateKey();
     let scheduledShift = state.shifts[currentRealDay];
     let hasValidShiftToday = scheduledShift && scheduledShift !== 'Wolne';
@@ -541,6 +555,7 @@
   }
 
   function updateCelebCounters() {
+    if (state.hideEarnings) return;
     const elapsedSec = (Date.now() - celebStartTime) / 1000;
     
     const muskPerSec = 634197;
@@ -603,6 +618,7 @@
       isRunning: state.isRunning,
       activeCat: state.activeCat, 
       liveMode: state.liveMode,
+      hideEarnings: state.hideEarnings,
       seconds: state.seconds, 
       earned: state.earned,
       historyEarned: state.historyEarned, 
@@ -830,22 +846,38 @@
       let isHoliday = (shift === 'Urlop');
 
       let dayEarnedMap = (dayStr === state.activeDayKey) ? state.earned : (state.historyEarned[dayStr] || null);
+      let daySecMap = (dayStr === state.activeDayKey) ? state.seconds : (state.historySeconds[dayStr] || null);
       let miniBadgesHtml = '';
 
-      if (dayEarnedMap) {
-        categories.forEach(c => {
-          let val = (dayEarnedMap[c.id] || 0) * mult;
-          if (val > 0) {
-            miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${val.toFixed(0)} zł</span></span>`;
-          }
-        });
-      }
-
-      if (isHoliday) {
-        let isNightShift = (shift === '3');
-        let rate = getHourlyRate(false, isNightShift) * mult;
-        let urlopVal = rate * 8;
-        miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${urlopVal.toFixed(0)} zł</span></span>`;
+      if (state.hideEarnings) {
+        if (daySecMap) {
+          categories.forEach(c => {
+            let s = daySecMap[c.id] || 0;
+            if (s > 0) {
+              let m = Math.round(s / 60);
+              let txt = m >= 60 ? `${(m/60).toFixed(1)}h` : `${m}m`;
+              miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${txt}</span></span>`;
+            }
+          });
+        }
+        if (isHoliday) {
+          miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff; padding: 2px 4px; font-weight: bold; text-align: center;"><span>8.0h</span></span>`;
+        }
+      } else {
+        if (dayEarnedMap) {
+          categories.forEach(c => {
+            let val = (dayEarnedMap[c.id] || 0) * mult;
+            if (val > 0) {
+              miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${val.toFixed(0)} zł</span></span>`;
+            }
+          });
+        }
+        if (isHoliday) {
+          let isNightShift = (shift === '3');
+          let rate = getHourlyRate(false, isNightShift) * mult;
+          let urlopVal = rate * 8;
+          miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${urlopVal.toFixed(0)} zł</span></span>`;
+        }
       }
 
       cell.className = 'cal-day' + (isToday ? ' today' : '');
@@ -906,13 +938,25 @@
 
     let activeCat = state.activeCat || 'Praca';
     let modeSuffix = state.liveMode === 'netto' ? ' (SZAC. NETTO)' : ' (BRUTTO)';
-    document.getElementById('modeLabel').textContent = `ZAROBIONO NA: ${activeCat.toUpperCase()}${modeSuffix}`;
-
+    
     let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
     let activeEarned = (state.earned[activeCat] || 0) * mult;
     let activeSec = state.seconds[activeCat] || 0;
 
-    document.getElementById('totalEarned').textContent = activeEarned.toFixed(4) + ' PLN';
+    if (state.hideEarnings) {
+      document.getElementById('modeLabel').textContent = `CZAS CZYNNOŚCI: ${activeCat.toUpperCase()}`;
+      document.getElementById('totalEarned').textContent = formatTime(activeSec);
+      document.getElementById('rateWrapper').style.display = 'none';
+      document.getElementById('celebBox').style.display = 'none';
+      document.querySelector('.mode-selector').style.display = 'none';
+    } else {
+      document.getElementById('modeLabel').textContent = `ZAROBIONO NA: ${activeCat.toUpperCase()}${modeSuffix}`;
+      document.getElementById('totalEarned').textContent = activeEarned.toFixed(4) + ' PLN';
+      document.getElementById('rateWrapper').style.display = 'inline';
+      document.getElementById('celebBox').style.display = 'block';
+      document.querySelector('.mode-selector').style.display = 'flex';
+    }
+
     document.getElementById('totalTime').textContent = formatTime(activeSec);
 
     let activeCatObj = categories.find(c => c.id === activeCat) || categories[0];
@@ -929,11 +973,15 @@
       if (isSel) card.style.borderColor = c.color;
       card.onclick = () => selectCategory(c.id);
       let catEarned = (state.earned[c.id] || 0) * mult;
+      
+      let topValue = state.hideEarnings ? formatTime(state.seconds[c.id]||0) : `${catEarned.toFixed(2)} zł`;
+      let subValue = state.hideEarnings ? `Czynność: ${c.id}` : formatTime(state.seconds[c.id]||0);
+
       card.innerHTML = `
         <button class="edit-btn" onclick="openEditTimeModal('${c.id}', event)">✏️ Edytuj</button>
         <div class="cat-title" style="color:${isSel?'#fff':'#ccc'}">${c.id.toUpperCase()}</div>
-        <div class="cat-money" style="color:${c.color}">${catEarned.toFixed(2)} zł</div>
-        <div class="cat-time">${formatTime(state.seconds[c.id]||0)}</div>
+        <div class="cat-money" style="color:${c.color}">${topValue}</div>
+        <div class="cat-time">${subValue}</div>
       `;
       grid.appendChild(card);
     });
@@ -1059,18 +1107,34 @@
     }
 
     document.getElementById('summaryTitle').textContent = titleText;
-    document.getElementById('sumPeriodTotal').textContent = statsObj.earned.total.toFixed(2) + ' zł';
+    
+    if (state.hideEarnings) {
+      document.getElementById('sumPeriodHeader').textContent = 'Łączny czas okresu';
+      document.getElementById('sumPeriodTotal').textContent = formatTime(statsObj.seconds.total);
+    } else {
+      document.getElementById('sumPeriodHeader').textContent = 'Suma okresu';
+      document.getElementById('sumPeriodTotal').textContent = statsObj.earned.total.toFixed(2) + ' zł';
+    }
     
     let periodHtml = '';
     categories.forEach(c => {
       let amt = statsObj.earned[c.id].toFixed(2);
       let timeStr = formatTime(statsObj.seconds[c.id]);
-      periodHtml += `
-        <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
-          <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${amt} zł</span></div>
-          <div class="sum-time-sub">Czas: ${timeStr}</div>
-        </div>
-      `;
+      
+      if (state.hideEarnings) {
+        periodHtml += `
+          <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
+            <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${timeStr}</span></div>
+          </div>
+        `;
+      } else {
+        periodHtml += `
+          <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
+            <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${amt} zł</span></div>
+            <div class="sum-time-sub">Czas: ${timeStr}</div>
+          </div>
+        `;
+      }
     });
     document.getElementById('sumPeriodDetails').innerHTML = periodHtml;
   }
