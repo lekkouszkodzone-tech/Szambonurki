@@ -345,7 +345,7 @@
 </div>
 
 <div class="celeb-section" id="celebBox">
-  <h2>🚀 Licznik zarobków (od otwarcia strony)</h2>
+  <h2>🚀 Zarobki dzisiaj (od północy)</h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Jeff Bezos:</span> <span id="celebBezos" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Cristiano Ronaldo:</span> <span id="celebRonaldo" style="color: var(--green);">0.00 zł</span></div>
@@ -393,7 +393,6 @@
 
   let timerInterval = null;
   let celebInterval = null;
-  let celebStartTime = Date.now();
   let selectedModalDate = null;
   let editingCategory = null;
   let viewYear = new Date().getFullYear();
@@ -552,11 +551,16 @@
     
     if (celebInterval) clearInterval(celebInterval);
     celebInterval = setInterval(updateCelebCounters, 1000);
+    updateCelebCounters();
   }
 
   function updateCelebCounters() {
     if (state.hideEarnings) return;
-    const elapsedSec = (Date.now() - celebStartTime) / 1000;
+    
+    // Licz sekundy od północy dzisiejszego dnia
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const elapsedSec = (now.getTime() - midnight.getTime()) / 1000;
     
     const muskPerSec = 634197;
     const bezosPerSec = 450000;
