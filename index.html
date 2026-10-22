@@ -56,7 +56,6 @@
   }
   .btn-main.running { background-color: #d32f2f; }
 
-  /* Humorystyczny boks dzisiejszego dnia */
   .daily-joke-box {
     background: rgba(255, 235, 59, 0.08);
     border: 1px dashed rgba(255, 235, 59, 0.4);
@@ -130,12 +129,10 @@
   .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
   .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
 
-  /* Styl dla porównania z celebrytami */
   .celeb-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
   .celeb-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 10px; color: #ffeb3b; }
   .celeb-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; font-family: monospace; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px; }
 
-  /* Styl dla wydruku PDF */
   @media print {
     body { background: #fff !important; color: #000 !important; padding: 0; }
     .header-btns, .counter-buttons, .mode-selector, .settings, .edit-btn, details, .schedule-section, .celeb-section, .grid, .daily-joke-box { display: none !important; }
@@ -174,7 +171,6 @@
   </div>
 </div>
 
-<!-- CODZIENNE HUMORYSTYCZNE PODSUMOWANIE -->
 <div class="daily-joke-box">
   <h4>💡 Refleksja Dnia</h4>
   <p id="dailyJokeText">Ładowanie mądrości szambonurka...</p>
@@ -344,7 +340,6 @@
   </div>
 </div>
 
-<!-- PORÓWNANIE Z CELEBRYTAMI NA SAMYM DOLE -->
 <div class="celeb-section">
   <h2>🚀 Licznik zarobków (od otwarcia strony)</h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
@@ -400,7 +395,6 @@
   let viewMonth = new Date().getMonth();
   const MAX_WORK_SECONDS = 8 * 3600;
 
-  // Baza humorystycznych tekstów zmienianych codziennie
   const dailyJokes = [
     "Dzisiaj Twoje wizyty w WC generują czysty zysk. Kto bogatemu zabroni?",
     "Telefon w dłoni to nie praca na gapę, to strategiczny lobbying!",
@@ -463,20 +457,22 @@
     let scheduledShift = state.shifts[currentRealDay];
     let hasValidShiftToday = scheduledShift && scheduledShift !== 'Wolne';
 
+    // Przeliczenie czasu spędzonego poza aplikacją (w tle)
     if (state.isRunning && state.lastTick && hasValidShiftToday) {
       const now = Date.now();
-      let nowTime = new Date(now);
-      
-      let startCheckTime = new Date(nowTime);
-      startCheckTime.setHours(7, 0, 0, 0);
-      
-      let shiftEndTime = new Date(nowTime);
+      let lastTickDate = new Date(state.lastTick);
+
+      let shiftEndTime = new Date(lastTickDate);
+
       if (scheduledShift === '1') {
-        shiftEndTime.setHours(14, 59, 59, 0);
+        shiftEndTime.setHours(14, 59, 59, 999);
       } else if (scheduledShift === '2') {
-        shiftEndTime.setHours(22, 59, 59, 0);
+        shiftEndTime.setHours(22, 59, 59, 999);
       } else if (scheduledShift === '3') {
-        shiftEndTime.setHours(6, 59, 59, 0);
+        if (lastTickDate.getHours() >= 23) {
+          shiftEndTime.setDate(shiftEndTime.getDate() + 1);
+        }
+        shiftEndTime.setHours(6, 59, 59, 999);
       } else {
         shiftEndTime.setHours(15, 0, 0, 0);
       }
@@ -484,7 +480,7 @@
       let effectiveNow = Math.min(now, shiftEndTime.getTime());
       const elapsedSec = (effectiveNow - state.lastTick) / 1000;
       
-      if (elapsedSec > 0 && nowTime.getTime() >= startCheckTime.getTime()) {
+      if (elapsedSec > 0) {
         let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
         let allowedSec = Math.min(elapsedSec, MAX_WORK_SECONDS - totalSec);
         if (allowedSec > 0) {
@@ -535,11 +531,6 @@
       state.activeDayKey = currentRealDay;
       checkAutoStartShift(currentRealDay);
       saveState();
-    } else {
-      let totalSec = Object.values(state.seconds).reduce((a,b)=>a+b, 0);
-      if (!state.isRunning && totalSec === 0) {
-        checkAutoStartShift(currentRealDay);
-      }
     }
 
     setLiveMode(state.liveMode, false);
