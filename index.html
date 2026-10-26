@@ -3,126 +3,513 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Szambonurki</title>
+<title>Szambonurki - Centrum Dowodzenia</title>
 <link rel="manifest" href="./manifest.json">
 <style>
   :root {
-    --bg: #121212;
-    --card: #1e1e1e;
+    --bg: #0f0f12;
+    --card: #1a1a1f;
+    --card-border: #2e2e38;
     --green: #00e676;
+    --green-dim: rgba(0, 230, 118, 0.15);
+    --red: #ff5252;
+    --purple: #e040fb;
+    --cyan: #18ffff;
+    --blue: #448aff;
+    --yellow: #ffeb3b;
     --text: #ffffff;
-    --muted: #aaaaaa;
+    --muted: #9e9e9e;
   }
-  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 40px; }
-  .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px 16px; }
-  .header-brand { display: flex; align-items: center; gap: 10px; }
-  .header h1 { font-size: 18px; margin: 0; line-height: 1.2; }
-  .header-btns { display: flex; gap: 8px; }
-  .btn-action { background: #222; color: #fff; border: 1px solid #444; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-  
-  .main-counter {
-    background: linear-gradient(135deg, #1b5e20, #000000);
-    border: 1.5px solid rgba(0, 230, 118, 0.5);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
+
+  * {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 12px;
+    padding-bottom: 50px;
+    overflow-x: hidden;
+  }
+
+  /* NAGŁÓWEK */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 6px 16px;
+    border-bottom: 1px solid var(--card-border);
     margin-bottom: 16px;
   }
-  .main-counter .mode-selector {
+  .header-brand {
     display: flex;
-    justify-content: center;
-    background: rgba(0,0,0,0.4);
+    flex-direction: column;
+  }
+  .header h1 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #00e676, #18ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .header-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-action {
+    background: #25252d;
+    color: #fff;
+    border: 1px solid #3d3d4a;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .btn-action:active {
+    transform: scale(0.96);
+    background: #33333d;
+  }
+
+  /* GŁÓWNY LICZNIK */
+  .main-counter {
+    background: linear-gradient(145deg, #16361c, #0d0d11);
+    border: 1.5px solid rgba(0, 230, 118, 0.4);
+    border-radius: 20px;
+    padding: 20px 16px;
+    text-align: center;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .top-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+  .mode-selector {
+    display: flex;
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 20px;
     padding: 3px;
-    margin-bottom: 12px;
-    max-width: 200px;
-    margin-left: auto;
-    margin-right: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    flex: 1;
+    max-width: 180px;
   }
   .mode-btn {
-    flex: 1; background: transparent; border: none; color: #aaa; font-weight: bold; padding: 6px 0; border-radius: 16px; font-size: 12px; cursor: pointer;
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-weight: 700;
+    padding: 6px 0;
+    border-radius: 16px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.2s;
   }
-  .mode-btn.active { background: var(--green); color: #000; }
-
-  .main-counter .label { font-size: 12px; color: #ccc; letter-spacing: 1px; text-transform: uppercase; }
-  .main-counter .amount { font-size: 36px; font-weight: bold; color: var(--green); font-family: monospace; margin: 10px 0; }
-  .main-counter .sub { font-size: 13px; color: #ddd; margin-bottom: 16px; }
-  
-  .counter-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .btn-main {
-    background-color: #2e7d32; color: white; border: none; padding: 12px 20px;
-    font-size: 15px; font-weight: bold; border-radius: 24px; cursor: pointer; flex: 1; min-width: 130px;
+  .mode-btn.active {
+    background: var(--green);
+    color: #000;
   }
-  .btn-main.running { background-color: #d32f2f; }
+  .btn-eye {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-eye.hidden-active {
+    background: var(--purple);
+    color: #000;
+    border-color: var(--purple);
+  }
 
-  .daily-joke-box {
-    background: rgba(255, 235, 59, 0.08);
-    border: 1px dashed rgba(255, 235, 59, 0.4);
-    border-radius: 12px;
-    padding: 12px 14px;
+  .main-counter .label {
+    font-size: 11px;
+    color: #ccc;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .main-counter .amount {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--green);
+    font-family: "SF Mono", "Roboto Mono", monospace;
+    margin: 8px 0;
+    text-shadow: 0 2px 10px rgba(0, 230, 118, 0.25);
+  }
+  .main-counter .sub {
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* PASEK POSTĘPU ZMIANY */
+  .shift-progress-container {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 8px 10px;
     margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+  }
+  .shift-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #bbb;
+    margin-bottom: 5px;
+    font-family: monospace;
+  }
+  .shift-progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: #222;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .shift-progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    transition: width 0.4s ease;
+  }
+
+  .counter-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .btn-main {
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 800;
+    border-radius: 28px;
+    cursor: pointer;
+    flex: 1;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+    transition: 0.2s;
+  }
+  .btn-main.running {
+    background-color: #d32f2f;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
+  }
+
+  /* HUMORYSTYCZNY BOKS */
+  .daily-joke-box {
+    background: linear-gradient(135deg, rgba(255, 235, 59, 0.08), rgba(224, 64, 251, 0.05));
+    border: 1px dashed rgba(255, 235, 59, 0.4);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
     text-align: center;
+    position: relative;
   }
-  .daily-joke-box h4 { margin: 0 0 4px 0; font-size: 12px; color: #ffeb3b; text-transform: uppercase; letter-spacing: 0.5px; }
-  .daily-joke-box p { margin: 0; font-size: 13px; color: #eee; font-style: italic; }
-  
-  .section-title { font-size: 12px; font-weight: bold; color: var(--muted); text-align: center; margin-bottom: 10px; text-transform: uppercase; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .daily-joke-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .daily-joke-box h4 {
+    margin: 0;
+    font-size: 11px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .btn-next-joke {
+    background: rgba(255, 235, 59, 0.15);
+    border: 1px solid rgba(255, 235, 59, 0.3);
+    color: var(--yellow);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .daily-joke-box p {
+    margin: 0;
+    font-size: 13px;
+    color: #f0f0f0;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* KAFELKI KATEGORII */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
   .cat-card {
-    background-color: var(--card); border: 1px solid #333; border-radius: 12px;
-    padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; position: relative;
+    background-color: var(--card);
+    border: 1.5px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+    overflow: hidden;
   }
-  .cat-card.active { border-width: 2.5px; background-color: rgba(255,255,255,0.06); }
-  .cat-title { font-weight: bold; font-size: 15px; margin-bottom: 6px; }
-  .cat-money { font-size: 18px; font-weight: bold; margin-bottom: 4px; font-family: monospace; }
-  .cat-time { font-size: 12px; color: var(--muted); }
+  .cat-card.active {
+    border-width: 2px;
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+  }
+  .cat-title {
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  .cat-money {
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    font-family: monospace;
+  }
+  .cat-time {
+    font-size: 12px;
+    color: #ccc;
+    font-family: monospace;
+  }
+  .cat-percent {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
   .edit-btn {
-    position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.1); border: none; color: #aaa;
-    border-radius: 4px; padding: 2px 6px; font-size: 10px; cursor: pointer;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #bbb;
+    border-radius: 6px;
+    padding: 3px 7px;
+    font-size: 10px;
+    cursor: pointer;
+    z-index: 3;
   }
-  .edit-btn:hover { background: var(--green); color: #000; }
+  .edit-btn:hover {
+    background: var(--green);
+    color: #000;
+  }
 
-  .schedule-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
-  .schedule-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
-  .month-nav { display: flex; align-items: center; gap: 6px; }
-  .month-nav button { background: #333; color: #fff; border: none; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
-  .month-nav button:hover { background: var(--green); color: #000; }
-
-  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: 12px; }
-  .cal-header-day { font-size: 11px; color: var(--muted); padding: 4px 0; font-weight: bold; }
+  /* KALENDARZ / GRAFIK */
+  .schedule-section {
+    background-color: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 18px;
+  }
+  .schedule-section h2 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .month-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .month-nav button {
+    background: #2b2b36;
+    color: #fff;
+    border: 1px solid #3f3f4e;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .cal-header-day {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 4px 0;
+    font-weight: 700;
+  }
   .cal-day {
-    background: #121212; border: 1px solid #333; border-radius: 6px; padding: 3px 2px;
-    font-size: 9px; cursor: pointer; min-height: 68px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-    position: relative; overflow: hidden;
+    background: #121216;
+    border: 1px solid #2b2b35;
+    border-radius: 8px;
+    padding: 4px 2px;
+    font-size: 9px;
+    cursor: pointer;
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
   }
-  .cal-day.today { border-color: var(--green); }
-  .cal-day.holiday { background: rgba(224,64,251,0.15); border-color: #e040fb; }
-  
-  .shift-tag { font-size: 8px; background: rgba(0,0,0,0.6); padding: 1px 3px; border-radius: 3px; color: #fff; z-index: 2; }
-  .day-top-info { display: flex; justify-content: space-between; width: 100%; padding: 0 2px; font-size: 9px; z-index: 2; }
-  .day-sub-sums { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; justify-content: center; z-index: 2; width: 100%; margin-top: 2px; margin-bottom: 2px; }
-  .mini-badge { font-size: 7px; padding: 1px 3px; border-radius: 2px; font-weight: bold; font-family: monospace; text-align: left; display: flex; justify-content: space-between; }
+  .cal-day.today {
+    border: 2px solid var(--green);
+    box-shadow: inset 0 0 8px rgba(0, 230, 118, 0.2);
+  }
+  .cal-day.holiday {
+    background: rgba(224, 64, 251, 0.12);
+    border-color: var(--purple);
+  }
+  .shift-tag {
+    font-size: 8px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1px 4px;
+    border-radius: 4px;
+    color: #fff;
+  }
+  .shift-tag.s1 { background: #2e7d32; }
+  .shift-tag.s2 { background: #1565c0; }
+  .shift-tag.s3 { background: #6a1b9a; }
 
-  .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-  .modal-content { background: var(--card); border: 1px solid #444; border-radius: 12px; padding: 20px; width: 90%; max-width: 380px; text-align: center; }
-  .modal-content h3 { margin-top: 0; font-size: 16px; }
-  .shift-select-btn { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; text-align: left; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .day-top-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 3px;
+    font-size: 10px;
+  }
+  .day-sub-sums {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    width: 100%;
+    margin-top: 3px;
+  }
+  .mini-badge {
+    font-size: 7.5px;
+    padding: 1px 2px;
+    border-radius: 3px;
+    font-weight: 800;
+    font-family: monospace;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 
+  /* MODALE */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.82);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+  }
+  .modal-content {
+    background: var(--card);
+    border: 1px solid #444;
+    border-radius: 16px;
+    padding: 20px;
+    width: 92%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+  }
+  .modal-content h3 {
+    margin-top: 0;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .shift-select-btn {
+    width: 100%;
+    background: #25252e;
+    border: 1px solid #3d3d4a;
+    color: #fff;
+    padding: 11px 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .shift-select-btn:active {
+    background: #32323e;
+  }
+
+  /* WIERSZE EDYCJI GODZIN I MINUT */
   .edit-day-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 8px;
-    padding: 6px 8px;
-    background: #181818;
-    border-radius: 8px;
-    border: 1px solid #2a2a2a;
+    padding: 8px 10px;
+    background: #141418;
+    border-radius: 10px;
+    border: 1px solid #2b2b36;
   }
   .edit-day-label {
-    font-size: 12px;
-    font-weight: bold;
-    width: 75px;
+    font-size: 13px;
+    font-weight: 800;
+    width: 80px;
     text-align: left;
   }
   .edit-day-inputs {
@@ -131,51 +518,206 @@
     align-items: center;
   }
   .edit-day-inputs input {
-    background: #101010;
+    background: #0d0d10;
     border: 1px solid #444;
     color: #fff;
-    padding: 6px 8px;
+    padding: 7px;
     border-radius: 6px;
-    font-size: 13px;
-    width: 60px;
+    font-size: 14px;
+    width: 58px;
     text-align: center;
+    font-family: monospace;
   }
   .edit-day-unit {
     font-size: 11px;
     color: var(--muted);
   }
 
-  .settings { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
-  .settings h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; }
-  .row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .input-group { flex: 1; display: flex; flex-direction: column; }
-  .input-group label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  /* USTAWIENIA */
+  .settings {
+    background-color: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 18px;
+  }
+  .row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .input-group label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
   .input-group input {
-    background: #121212; border: 1px solid #444; color: #fff; padding: 10px;
-    border-radius: 8px; font-size: 15px; width: 100%;
+    background: #121216;
+    border: 1px solid #3d3d4a;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 100%;
+    font-family: monospace;
+  }
+  .switch-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #2a2a34;
+    font-size: 13px;
+  }
+  .switch-row input[type="checkbox"] {
+    transform: scale(1.3);
+    accent-color: var(--green);
   }
 
-  .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #2a2a2a; font-size: 14px; }
-  .switch-row input[type="checkbox"] { transform: scale(1.3); accent-color: var(--green); }
+  /* PODSUMOWANIE OKRESU */
+  .summary-section {
+    background-color: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 18px;
+  }
+  .summary-section h2 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .summary-box {
+    background: #121216;
+    border: 1px solid #2b2b36;
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .summary-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: var(--green);
+    border-bottom: 1px solid #2b2b36;
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sum-cat-block {
+    margin: 8px 0;
+    border-bottom: 1px solid #22222a;
+    padding-bottom: 6px;
+  }
+  .sum-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin: 2px 0;
+    font-family: monospace;
+  }
+  .sum-time-sub {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+    margin-top: 3px;
+  }
+  .sum-bar-bg {
+    width: 100%;
+    height: 4px;
+    background: #222;
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .sum-bar-fill {
+    height: 100%;
+  }
 
-  .summary-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
-  .summary-section h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
-  .summary-box { background: #121212; border: 1px solid #333; border-radius: 10px; padding: 12px; }
-  .summary-box h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--green); border-bottom: 1px solid #333; padding-bottom: 4px; display: flex; justify-content: space-between; }
-  .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
-  .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
+  /* CELEBRYCI */
+  .celeb-section {
+    background-color: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--card-border);
+  }
+  .celeb-section h2 {
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--yellow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .celeb-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    margin: 7px 0;
+    font-family: monospace;
+    border-bottom: 1px solid #262630;
+    padding-bottom: 5px;
+  }
 
-  .celeb-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
-  .celeb-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 10px; color: #ffeb3b; }
-  .celeb-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; font-family: monospace; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px; }
-
+  /* DEDYKOWANY WIDOK DO WYDRUKU PDF */
+  #printReportSection {
+    display: none;
+  }
   @media print {
-    body { background: #fff !important; color: #000 !important; padding: 0; }
-    .header-btns, .counter-buttons, .mode-selector, .settings, .edit-btn, details, .schedule-section, .celeb-section, .grid, .daily-joke-box { display: none !important; }
-    .summary-section { border: none !important; background: #fff !important; padding: 0 !important; }
-    .summary-box { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; }
-    .sum-row span { color: #000 !important; }
-    #sumPeriodTotal { color: #000 !important; }
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+      padding: 10px !important;
+    }
+    .header, .main-counter, .daily-joke-box, .section-title, .grid, .schedule-section, .settings, .summary-section, .celeb-section, .modal {
+      display: none !important;
+    }
+    #printReportSection {
+      display: block !important;
+      width: 100%;
+      color: #000;
+      font-family: Arial, sans-serif;
+    }
+    .print-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 6px;
+    }
+    .print-sub {
+      font-size: 12px;
+      color: #444;
+      margin-bottom: 16px;
+    }
+    .print-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+    .print-table th, .print-table td {
+      border: 1px solid #999;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    .print-table th {
+      background-color: #eee !important;
+      font-weight: bold;
+    }
   }
 </style>
 </head>
@@ -183,23 +725,41 @@
 
 <div class="header">
   <div class="header-brand">
-    <h1>Szambonurki</h1>
+    <h1>SZAMBONURKI</h1>
+    <span class="header-sub" id="currentShiftIndicator">Sprawdzanie grafiku...</span>
   </div>
   <div class="header-btns">
-    <button class="btn-action" onclick="window.print()">🖨️ PDF</button>
-    <button class="btn-action" onclick="confirmReset()">Reset</button>
+    <button class="btn-action" onclick="prepareAndPrintPDF()">🖨️ Raport PDF</button>
+    <button class="btn-action" onclick="confirmReset()">🔄 Reset</button>
   </div>
 </div>
 
+<!-- GŁÓWNY PANEL LICZNIKA -->
 <div class="main-counter" id="mainCounterBox">
-  <div class="mode-selector">
-    <button class="mode-btn" id="modeBruttoBtn" onclick="setLiveMode('brutto')">BRUTTO</button>
-    <button class="mode-btn active" id="modeNettoBtn" onclick="setLiveMode('netto')">NETTO</button>
+  <div class="top-controls-row">
+    <div class="mode-selector" id="modeSelectorBox">
+      <button class="mode-btn" id="modeBruttoBtn" onclick="setLiveMode('brutto')">BRUTTO</button>
+      <button class="mode-btn active" id="modeNettoBtn" onclick="setLiveMode('netto')">NETTO</button>
+    </div>
+    <button class="btn-eye" id="quickHideBtn" onclick="quickToggleHide()">👁️ Ukryj zł</button>
   </div>
-  <div class="label" id="modeLabel">CZAS AKTYWNY: PRACA</div>
+
+  <div class="label" id="modeLabel">ZAROBIONO NA: PRACA (NETTO)</div>
   <div class="amount" id="totalEarned">0.0000 PLN</div>
+  
   <div class="sub">
-    Czas zmiany: <span id="totalTime">00:00:00</span> <span id="rateWrapper">| Stawka: <span id="hourlyRate" style="-webkit-text-security:disc;">0.00</span> zł/h</span>
+    <span>Aktywna czynność: <strong id="totalTime">00:00:00</strong></span>
+    <span id="rateWrapper">Stawka: <strong id="hourlyRate" style="-webkit-text-security:disc;">0.00</strong> zł/h</span>
+  </div>
+
+  <div class="shift-progress-container">
+    <div class="shift-progress-labels">
+      <span>Czas zmiany dzisiaj: <strong id="shiftTotalTimeLabel">00:00:00</strong> / 08:00:00</span>
+      <span id="shiftProgressPercent">0%</span>
+    </div>
+    <div class="shift-progress-bar-bg">
+      <div class="shift-progress-bar-fill" id="shiftProgressBar"></div>
+    </div>
   </div>
   
   <div class="counter-buttons">
@@ -207,20 +767,26 @@
   </div>
 </div>
 
+<!-- HUMORYSTYCZNE PODSUMOWANIE DNIA -->
 <div class="daily-joke-box">
-  <h4>💡 Refleksja Dnia</h4>
-  <p id="dailyJokeText">Ładowanie mądrości szambonurka...</p>
+  <div class="daily-joke-header">
+    <h4>💡 Codzienne podsumowanie zmiany</h4>
+    <button class="btn-next-joke" onclick="nextJokeManual()">Losuj inny 🎲</button>
+  </div>
+  <p id="dailyJokeText">Ładowanie raportu specjalnego...</p>
 </div>
 
-<div class="section-title">Co teraz robisz? (Kliknij kafelek, aby przełączyć, lub ✏️ by edytować czas)</div>
+<!-- KATEGORIE -->
+<div class="section-title">Co teraz robisz? (Kliknij kafelek by przełączyć, lub ✏️ by skorygować)</div>
 <div class="grid" id="categoriesGrid"></div>
 
+<!-- KALENDARZ GRAFIKU -->
 <div class="schedule-section">
   <h2>
-    <span>📅 Grafik Pracy</span>
+    <span>📅 Grafik i Historia Dni</span>
     <div class="month-nav">
       <button onclick="changeMonth(-1)">◀</button>
-      <span id="currentMonthTitle" style="font-size:13px; color:var(--green); min-width:110px; text-align:center;"></span>
+      <span id="currentMonthTitle" style="font-size:13px; color:var(--green); min-width:115px; text-align:center; font-weight:bold;"></span>
       <button onclick="changeMonth(1)">▶</button>
     </div>
   </h2>
@@ -236,28 +802,28 @@
   <div class="calendar-grid" id="calDays"></div>
 </div>
 
-<!-- MODAL GRAFIKU DNIA -->
+<!-- MODAL WYBORU ZMIANY W KALENDARZU -->
 <div class="modal" id="dayModal">
   <div class="modal-content">
     <h3 id="modalTitle">Wybierz zmianę na dzień</h3>
-    <div class="shift-select-btn" onclick="setDayShift('1')"><span>I Zmiana (07:00 - 14:59)</span> 🟢</div>
-    <div class="shift-select-btn" onclick="setDayShift('2')"><span>II Zmiana (15:00 - 22:59)</span> 🔵</div>
-    <div class="shift-select-btn" onclick="setDayShift('3')"><span>III Zmiana Nocna (23:00 - 06:59)</span> 🟣</div>
-    <div class="shift-select-btn" onclick="setDayShift('Urlop')"><span>Urlop (Cała dniówka)</span> 🌴</div>
-    <div class="shift-select-btn" onclick="openEditDayTimeModal()" style="border-color:#00e676; background:rgba(0,230,118,0.1);"><span>⏱️ Edytuj czas dnia (godz. i min.)</span> ⏳</div>
-    <div class="shift-select-btn" onclick="setDayShift('Wolne')" style="border-color:#d32f2f;"><span>Dzień wolny / Brak</span> ❌</div>
-    <button class="btn-action" style="width:100%; margin-top:10px; background:#444;" onclick="closeModal('dayModal')">Zamknij</button>
+    <div class="shift-select-btn" onclick="setDayShift('1')"><span>I Zmiana (07:00 – 14:59)</span> 🟢</div>
+    <div class="shift-select-btn" onclick="setDayShift('2')"><span>II Zmiana (15:00 – 22:59)</span> 🔵</div>
+    <div class="shift-select-btn" onclick="setDayShift('3')"><span>III Zmiana Nocna (23:00 – 06:59)</span> 🟣</div>
+    <div class="shift-select-btn" onclick="setDayShift('Urlop')"><span>Urlop wypoczynkowy (8h)</span> 🌴</div>
+    <div class="shift-select-btn" onclick="openEditDayTimeModal()" style="border-color:var(--green); background:rgba(0,230,118,0.12);"><span>⏱️ Edytuj czasy dnia (godz. i min.)</span> ✏️</div>
+    <div class="shift-select-btn" onclick="setDayShift('Wolne')" style="border-color:var(--red);"><span>Dzień wolny / Wyczyść zmianę</span> ❌</div>
+    <button class="btn-action" style="width:100%; margin-top:10px; justify-content:center; background:#333;" onclick="closeModal('dayModal')">Zamknij okno</button>
   </div>
 </div>
 
-<!-- MODAL RĘCZNEJ KOREKTY CZASU DNIA (GODZINY I MINUTY) -->
+<!-- MODAL RĘCZNEJ KOREKTY CZASU DNIA W KALENDARZU (GODZINY I MINUTY) -->
 <div class="modal" id="editDayTimeModal">
   <div class="modal-content">
-    <h3 id="editDayTimeTitle">Czas dnia</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:0; margin-bottom: 12px;">Wpisz godziny i minuty dla każdej czynności:</p>
+    <h3 id="editDayTimeTitle">Edycja czasu dnia</h3>
+    <p style="font-size: 12px; color: var(--muted); margin-top:0; margin-bottom: 14px;">Wpisz przepracowane godziny i minuty:</p>
     
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:#d32f2f;">Praca</span>
+      <span class="edit-day-label" style="color:var(--red);">Praca</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimePracaH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -267,7 +833,7 @@
     </div>
 
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:#e040fb;">Przerwa</span>
+      <span class="edit-day-label" style="color:var(--purple);">Przerwa</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimePrzerwaH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -277,7 +843,7 @@
     </div>
 
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:#18ffff;">Telefon</span>
+      <span class="edit-day-label" style="color:var(--cyan);">Telefon</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimeTelefonH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -287,7 +853,7 @@
     </div>
 
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:#448aff;">WC</span>
+      <span class="edit-day-label" style="color:var(--blue);">WC</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimeWCH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -296,16 +862,16 @@
       </div>
     </div>
 
-    <button class="btn-action" style="width:100%; margin-top:10px; background:#2e7d32;" onclick="saveDayTimeEarnings()">Zapisz i przelicz</button>
-    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editDayTimeModal')">Anuluj</button>
+    <button class="btn-action" style="width:100%; margin-top:12px; justify-content:center; background:#2e7d32; padding:12px;" onclick="saveDayTimeEarnings()">💾 Zapisz i przelicz dzień</button>
+    <button class="btn-action" style="width:100%; margin-top:8px; justify-content:center; background:#444; padding:10px;" onclick="closeModal('editDayTimeModal')">Anuluj</button>
   </div>
 </div>
 
-<!-- MODAL RĘCZNEJ KOREKTY CZASU BIEŻĄCEGO -->
+<!-- MODAL KOREKTY BIEŻĄCEGO KAFELKA -->
 <div class="modal" id="editTimeModal">
   <div class="modal-content">
     <h3 id="editModalTitle">Korekta czasu</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz nowy czas dla tej czynności:</p>
+    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz dokładny czas dla dzisiejszej czynności:</p>
     <div class="row">
       <div class="input-group">
         <label>Godziny</label>
@@ -320,37 +886,38 @@
         <input type="number" id="editSeconds" min="0" max="59" value="0">
       </div>
     </div>
-    <button class="btn-action" style="width:100%; margin-top:10px; background:#2e7d32;" onclick="saveManualTime()">Zapisz korektę</button>
-    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editTimeModal')">Anuluj</button>
+    <button class="btn-action" style="width:100%; margin-top:10px; justify-content:center; background:#2e7d32; padding:12px;" onclick="saveManualTime()">Zapisz korektę</button>
+    <button class="btn-action" style="width:100%; margin-top:6px; justify-content:center; background:#444; padding:10px;" onclick="closeModal('editTimeModal')">Anuluj</button>
   </div>
 </div>
 
-<!-- MODAL POTWIERDZENIA RESETU -->
+<!-- MODAL POTWIERDZENIA RESETU DNIA -->
 <div class="modal" id="confirmResetModal">
   <div class="modal-content">
-    <h3>⚠️ Potwierdzenie</h3>
-    <p style="font-size: 13px; color: #ddd; margin-bottom: 20px;">Czy na pewno chcesz zresetować dzisiejsze statystyki?</p>
+    <h3>⚠️ Reset dzisiejszej zmiany</h3>
+    <p style="font-size: 13px; color: #ddd; margin-bottom: 20px;">Czy na pewno chcesz wyzerować dzisiejszy licznik? Wcześniejsze dni w kalendarzu oraz historia pozostaną nietknięte.</p>
     <div style="display: flex; gap: 10px;">
-      <button class="btn-action" style="flex: 1; background: #d32f2f; padding: 12px; font-weight: bold;" onclick="executeReset()">Tak, resetuj dzisiaj</button>
-      <button class="btn-action" style="flex: 1; background: #444; padding: 12px;" onclick="closeModal('confirmResetModal')">Anuluj</button>
+      <button class="btn-action" style="flex: 1; justify-content:center; background: #d32f2f; padding: 12px; font-weight: bold;" onclick="executeReset()">Tak, zeruj dzisiaj</button>
+      <button class="btn-action" style="flex: 1; justify-content:center; background: #444; padding: 12px;" onclick="closeModal('confirmResetModal')">Anuluj</button>
     </div>
   </div>
 </div>
 
+<!-- USTAWIENIA -->
 <details class="settings">
-  <summary style="font-size: 16px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
-    <span>⚙️ Ustawienia wypłaty i stawek</span>
+  <summary style="font-size: 15px; font-weight: 800; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+    <span>⚙️ Ustawienia wypłaty i prywatności</span>
     <span style="font-size: 12px; color: var(--green);">▼ Rozwiń</span>
   </summary>
   <div style="margin-top: 14px;">
     <div class="row">
       <div class="input-group">
         <label>Podstawa Brutto (zł)</label>
-        <input type="password" id="baseSalary" value="5780" oninput="saveAndRecalc()">
+        <input type="password" id="baseSalary" value="6180" oninput="saveAndRecalc()">
       </div>
       <div class="input-group">
         <label>Godziny w grafiku (mies.)</label>
-        <input type="number" id="scheduledHours" value="168" style="-webkit-text-security:none;" oninput="saveAndRecalc()">
+        <input type="number" id="scheduledHours" value="168" oninput="saveAndRecalc()">
       </div>
     </div>
     <div class="row">
@@ -365,7 +932,7 @@
     </div>
 
     <div class="switch-row">
-      <span>Ukryj kwoty (pokazuj tylko czas)</span>
+      <span>👁️ Ukryj zarobki wszędzie (pokazuj sam czas)</span>
       <input type="checkbox" id="hideEarnings" onchange="toggleHideEarnings()">
     </div>
     <div class="switch-row">
@@ -381,17 +948,18 @@
       <input type="checkbox" id="ot100" onchange="handleOt(100)">
     </div>
     <div class="switch-row">
-      <span>Pokaż/odkryj wpisane kwoty w polach</span>
+      <span>Odkryj kwoty wpisane w polach powyżej</span>
       <input type="checkbox" id="showPasswords" onchange="togglePasswordVisibility()">
     </div>
   </div>
 </details>
 
+<!-- PODSUMOWANIA TYGODNIOWE / MIESIĘCZNE / ROCZNE -->
 <div class="summary-section">
   <h2>
     <span id="summaryTitle">Podsumowanie</span>
     <div style="display: flex; gap: 6px; align-items: center;">
-      <button class="btn-action" style="padding: 4px 8px; font-size: 11px;" onclick="window.print()">🖨️ PDF</button>
+      <button class="btn-action" style="padding: 5px 10px; font-size: 11px;" onclick="prepareAndPrintPDF()">🖨️ Eksport PDF</button>
       <div class="month-nav">
         <button onclick="changeSummaryOffset(-1)">◀</button>
         <button onclick="changeSummaryOffset(1)">▶</button>
@@ -406,22 +974,45 @@
   </div>
 
   <div class="summary-box">
-    <h3><span id="sumPeriodHeader">Suma okresu</span><span id="sumPeriodTotal" style="color:var(--green); font-size:16px;">0.00 zł</span></h3>
+    <h3>
+      <span id="sumPeriodHeader">Suma okresu</span>
+      <span id="sumPeriodTotal" style="color:var(--green); font-size:16px;">0.00 zł</span>
+    </h3>
     <div id="sumPeriodDetails"></div>
   </div>
 </div>
 
+<!-- LICZNIK CELEBRYTÓW OD PÓŁNOCY -->
 <div class="celeb-section" id="celebBox">
-  <h2>🚀 Zarobki dzisiaj (od północy)</h2>
+  <h2>
+    <span>🚀 Zarobki dzisiaj (od 00:00)</span>
+    <span style="font-size:11px; color:var(--muted); font-weight:normal;">Na żywo</span>
+  </h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Jeff Bezos:</span> <span id="celebBezos" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Cristiano Ronaldo:</span> <span id="celebRonaldo" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Robert Lewandowski:</span> <span id="celebLewy" style="color: var(--green);">0.00 zł</span></div>
+  <div class="celeb-row" style="border-bottom:none; padding-top:4px;">
+    <span style="color:var(--cyan); font-weight:bold;">Twoja zmiana dzisiaj:</span>
+    <span id="celebUserToday" style="color: var(--cyan); font-weight:bold;">0.00 zł</span>
+  </div>
+</div>
+
+<!-- UKRYTA SEKCJA DO WYDRUKU PDF -->
+<div id="printReportSection">
+  <div class="print-title">Raport Czasu Pracy i Zarobków - Szambonurki</div>
+  <div class="print-sub" id="printDateSub">Wygenerowano: </div>
+  
+  <h4>1. Raport Dzienny (Dzisiejsza zmiana)</h4>
+  <table class="print-table" id="printDailyTable"></table>
+
+  <h4 id="printPeriodHeading">2. Podsumowanie Okresu</h4>
+  <table class="print-table" id="printPeriodTable"></table>
 </div>
 
 <script>
   const categories = [
-    { id: 'Praca', color: '#d32f2f' },
+    { id: 'Praca', color: '#ff5252' },
     { id: 'Przerwa', color: '#e040fb' },
     { id: 'Telefon', color: '#18ffff' },
     { id: 'WC', color: '#448aff' }
@@ -429,20 +1020,6 @@
 
   window.summaryType = 'month';
   window.summaryOffset = 0;
-
-  function setSummaryType(type) {
-    window.summaryType = type;
-    window.summaryOffset = 0;
-    document.getElementById('sumTabWeek').className = 'mode-btn' + (type === 'week' ? ' active' : '');
-    document.getElementById('sumTabMonth').className = 'mode-btn' + (type === 'month' ? ' active' : '');
-    document.getElementById('sumTabYear').className = 'mode-btn' + (type === 'year' ? ' active' : '');
-    updateUI();
-  }
-
-  function changeSummaryOffset(dir) {
-    window.summaryOffset += dir;
-    updateUI();
-  }
 
   let state = {
     isRunning: false,
@@ -464,30 +1041,76 @@
   let editingCategory = null;
   let viewYear = new Date().getFullYear();
   let viewMonth = new Date().getMonth();
+  let manualJokeOffset = 0;
   const MAX_WORK_SECONDS = 8 * 3600;
 
+  // Rozbudowana baza humorystycznych tekstów
   const dailyJokes = [
-    "Dzisiaj Twoje wizyty w WC generują czysty zysk. Kto bogatemu zabroni?",
-    "Telefon w dłoni to nie praca na gapę, to strategiczny lobbying!",
-    "Szambo nurkuje, a Ty płyniesz po milion. Trzymaj tak dalej!",
-    "Praca uszlachetnia, ale przerwa i telefon dają najwyższe stopy zwrotu.",
-    "Każda minuta spędzona na kiblu to inwestycja w Twój wewnętrzny spokój (i budżet).",
-    "Głowa do góry! Elon Musk może i ma SpaceX, ale czy zarabia na kiblu tyle co Ty?",
-    "Woda w oczyszczalni płynie, a Twoje statystyki rosną jak na drożdżach."
+    "Dzisiaj Twoje posiedzenia w WC mają wyższą stopę zwrotu niż obligacje skarbowe!",
+    "Telefon w dłoni to nie opierdalanie się – to zdalne monitorowanie procesów biologicznych.",
+    "Każda minuta na kiblu to minuta, za którą płaci zakład. Sraj powoli i z godnością!",
+    "Elon Musk wysyła rakiety w kosmos, ale to Ty bijesz rekordy zysku na sedesie.",
+    "Praca uszlachetnia, ale to Przerwa i Telefon budują prawdziwy kapitał psychiczny.",
+    "Pseudo premia może i jest wirtualna, ale czas spędzony na WC jest jak najbardziej realny!",
+    "Gdyby płacili Ci od każdego przescrollowanego kilometra na telefonie, miałbyś już jacht.",
+    "Pamiętaj: na III zmianie czas w WC płynie dwa razy wolniej, ale z dodatkiem nocnym smakuje lepiej!",
+    "Szambo płynie, wirówka kręci, a Twoje złotówki za przeglądanie internetu lecą na konto.",
+    "Złota zasada operatora: nigdy nie rób w czasie wolnym tego, co możesz zrobić w pracy na płatnym WC."
   ];
 
-  function setDailyJoke() {
+  function updateJokeBanner() {
     let dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    let jokeIndex = dayOfYear % dailyJokes.length;
-    document.getElementById('dailyJokeText').textContent = `„${dailyJokes[jokeIndex]}”`;
+    let idx = (dayOfYear + manualJokeOffset) % dailyJokes.length;
+    let baseJoke = dailyJokes[idx];
+
+    let wcSec = state.seconds['WC'] || 0;
+    let telSec = state.seconds['Telefon'] || 0;
+    let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
+    let wcMoney = ((state.earned['WC'] || 0) * mult).toFixed(2);
+    let telMoney = ((state.earned['Telefon'] || 0) * mult).toFixed(2);
+
+    let dynamicAdd = "";
+    if (!state.hideEarnings && (wcSec > 60 || telSec > 60)) {
+      dynamicAdd = ` (Dziś na WC: ${wcMoney} zł, Telefon: ${telMoney} zł!)`;
+    } else if (state.hideEarnings && (wcSec > 60 || telSec > 60)) {
+      dynamicAdd = ` (Dziś na WC: ${Math.floor(wcSec/60)} min, Telefon: ${Math.floor(telSec/60)} min!)`;
+    }
+
+    document.getElementById('dailyJokeText').textContent = `„${baseJoke}”${dynamicAdd}`;
   }
 
+  function nextJokeManual() {
+    manualJokeOffset++;
+    updateJokeBanner();
+  }
+
+  // Klucz doby roboczej (przed 07:00 rano zalicza do poprzedniego dnia z uwagi na III zmianę 23:00-06:59)
   function getRealDateKey(customDate = null) {
     let d = customDate ? new Date(customDate) : new Date();
     if (!customDate && d.getHours() < 7) {
       d.setDate(d.getDate() - 1);
     }
-    return d.toISOString().split('T')[0];
+    let year = d.getFullYear();
+    let month = String(d.getMonth() + 1).padStart(2, '0');
+    let day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Precyzyjne wyliczanie znacznika końca zmiany
+  function getShiftEndTimestamp(dayKey, shiftType) {
+    let [y, m, d] = dayKey.split('-').map(Number);
+    let endDate = new Date(y, m - 1, d);
+    if (shiftType === '1') {
+      endDate.setHours(14, 59, 59, 999);
+    } else if (shiftType === '2') {
+      endDate.setHours(22, 59, 59, 999);
+    } else if (shiftType === '3') {
+      endDate.setDate(endDate.getDate() + 1);
+      endDate.setHours(6, 59, 59, 999);
+    } else {
+      endDate.setHours(23, 59, 59, 999);
+    }
+    return endDate.getTime();
   }
 
   function toggleHideEarnings() {
@@ -496,750 +1119,29 @@
     updateUI();
   }
 
+  function quickToggleHide() {
+    state.hideEarnings = !state.hideEarnings;
+    document.getElementById('hideEarnings').checked = state.hideEarnings;
+    saveState();
+    updateUI();
+  }
+
+  function setSummaryType(type) {
+    window.summaryType = type;
+    window.summaryOffset = 0;
+    document.getElementById('sumTabWeek').className = 'mode-btn' + (type === 'week' ? ' active' : '');
+    document.getElementById('sumTabMonth').className = 'mode-btn' + (type === 'month' ? ' active' : '');
+    document.getElementById('sumTabYear').className = 'mode-btn' + (type === 'year' ? ' active' : '');
+    updateUI();
+  }
+
+  function changeSummaryOffset(dir) {
+    window.summaryOffset += dir;
+    updateUI();
+  }
+
   function loadSettings() {
-    setDailyJoke();
     const saved = localStorage.getItem('szambonurki_settings');
     if (saved) {
       const s = JSON.parse(saved);
-      document.getElementById('baseSalary').value = s.baseSalary ?? 5780;
-      document.getElementById('scheduledHours').value = s.scheduledHours ?? 168;
-      document.getElementById('bonus').value = s.bonus ?? 300;
-      document.getElementById('nightBonus').value = s.nightBonus ?? 5.50;
-      document.getElementById('incBonus').checked = s.incBonus ?? true;
-      document.getElementById('ot50').checked = s.ot50 ?? false;
-      document.getElementById('ot100').checked = s.ot100 ?? false;
-    }
-    const savedState = localStorage.getItem('szambonurki_state');
-    if (savedState) {
-      const st = JSON.parse(savedState);
-      state.activeCat = st.activeCat || 'Praca';
-      state.liveMode = st.liveMode || 'netto';
-      state.hideEarnings = st.hideEarnings || false;
-      state.isRunning = st.isRunning || false;
-      state.lastTick = st.lastTick || null;
-      if (st.seconds) {
-        categories.forEach(c => { if(st.seconds[c.id] !== undefined) state.seconds[c.id] = st.seconds[c.id]; });
-      }
-      if (st.earned) {
-        categories.forEach(c => { if(st.earned[c.id] !== undefined) state.earned[c.id] = st.earned[c.id]; });
-      }
-      state.historyEarned = st.historyEarned || {};
-      state.historySeconds = st.historySeconds || {};
-      state.shifts = st.shifts || {};
-      state.activeDayKey = st.activeDayKey || getRealDateKey();
-    } else {
-      state.activeDayKey = getRealDateKey();
-    }
-    
-    document.getElementById('hideEarnings').checked = state.hideEarnings;
-
-    let currentRealDay = getRealDateKey();
-    let scheduledShift = state.shifts[currentRealDay];
-    let hasValidShiftToday = scheduledShift && scheduledShift !== 'Wolne';
-
-    if (state.isRunning && state.lastTick && hasValidShiftToday) {
-      const now = Date.now();
-      let lastTickDate = new Date(state.lastTick);
-
-      let shiftEndTime = new Date(lastTickDate);
-
-      if (scheduledShift === '1') {
-        shiftEndTime.setHours(14, 59, 59, 999);
-      } else if (scheduledShift === '2') {
-        shiftEndTime.setHours(22, 59, 59, 999);
-      } else if (scheduledShift === '3') {
-        if (lastTickDate.getHours() >= 23) {
-          shiftEndTime.setDate(shiftEndTime.getDate() + 1);
-        }
-        shiftEndTime.setHours(6, 59, 59, 999);
-      } else {
-        shiftEndTime.setHours(15, 0, 0, 0);
-      }
-
-      let effectiveNow = Math.min(now, shiftEndTime.getTime());
-      const elapsedSec = (effectiveNow - state.lastTick) / 1000;
-      
-      if (elapsedSec > 0) {
-        let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
-        let allowedSec = Math.min(elapsedSec, MAX_WORK_SECONDS - totalSec);
-        if (allowedSec > 0) {
-          let perSecRateBrutto = getHourlyRate(false) / 3600;
-          let cat = state.activeCat;
-          if (state.seconds[cat] !== undefined) {
-            state.seconds[cat] += allowedSec;
-            state.earned[cat] += (perSecRateBrutto * allowedSec);
-          }
-        }
-      }
-
-      if (now >= shiftEndTime.getTime() || Object.values(state.seconds).reduce((a, b) => a + b, 0) >= MAX_WORK_SECONDS) {
-        state.isRunning = false;
-        state.lastTick = null;
-      } else {
-        state.lastTick = now;
-      }
-    } else {
-      if (state.isRunning && !hasValidShiftToday) {
-        state.isRunning = false;
-      }
-      state.lastTick = null;
-    }
-
-    if (timerInterval) clearInterval(timerInterval);
-    if (state.isRunning) {
-      const btn = document.getElementById('startBtn');
-      btn.textContent = 'PAUZA';
-      btn.classList.add('running');
-      timerInterval = setInterval(tick, 1000);
-    } else {
-      const btn = document.getElementById('startBtn');
-      btn.textContent = 'START ZMIANY';
-      btn.classList.remove('running');
-    }
-
-    if (state.activeDayKey !== currentRealDay) {
-      let shiftTotal = Object.values(state.earned).reduce((a,b)=>a+b, 0);
-      if (shiftTotal > 0 || Object.values(state.seconds).reduce((a,b)=>a+b, 0) > 0) {
-        state.historyEarned[state.activeDayKey] = {...state.earned};
-        state.historySeconds[state.activeDayKey] = {...state.seconds};
-      }
-      categories.forEach(c => {
-        state.seconds[c.id] = 0;
-        state.earned[c.id] = 0;
-      });
-      state.activeDayKey = currentRealDay;
-      checkAutoStartShift(currentRealDay);
-      saveState();
-    }
-
-    setLiveMode(state.liveMode, false);
-    renderCalendar();
-    
-    if (celebInterval) clearInterval(celebInterval);
-    celebInterval = setInterval(updateCelebCounters, 1000);
-    updateCelebCounters();
-  }
-
-  function updateCelebCounters() {
-    if (state.hideEarnings) return;
-    
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const elapsedSec = (now.getTime() - midnight.getTime()) / 1000;
-    
-    const muskPerSec = 634197;
-    const bezosPerSec = 450000;
-    const ronaldoPerSec = 25.36;
-    const lewyPerSec = 3.80;
-
-    document.getElementById('celebMusk').textContent = (elapsedSec * muskPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
-    document.getElementById('celebBezos').textContent = (elapsedSec * bezosPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
-    document.getElementById('celebRonaldo').textContent = (elapsedSec * ronaldoPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
-    document.getElementById('celebLewy').textContent = (elapsedSec * lewyPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
-  }
-
-  function checkAutoStartShift(dayKey) {
-    let shift = state.shifts[dayKey];
-    if (shift && shift !== 'Wolne') {
-      if (shift === 'Urlop') {
-        let rate = getHourlyRate(false, false);
-        let dailyAmount = rate * 8;
-        state.earned['Praca'] = dailyAmount;
-        state.seconds['Praca'] = MAX_WORK_SECONDS;
-      } else {
-        state.activeCat = 'Praca';
-      }
-    }
-  }
-
-  function setLiveMode(mode, save = true) {
-    state.liveMode = mode;
-    document.getElementById('modeBruttoBtn').className = 'mode-btn' + (mode === 'brutto' ? ' active' : '');
-    document.getElementById('modeNettoBtn').className = 'mode-btn' + (mode === 'netto' ? ' active' : '');
-    if (save) { saveState(); updateUI(); }
-  }
-
-  function togglePasswordVisibility() {
-    const show = document.getElementById('showPasswords').checked;
-    ['baseSalary', 'bonus', 'nightBonus'].forEach(id => {
-      let input = document.getElementById(id);
-      input.type = show ? 'text' : 'password';
-    });
-    document.getElementById('hourlyRate').style.webkitTextSecurity = show ? 'none' : 'disc';
-  }
-
-  function saveAndRecalc() {
-    const settings = {
-      baseSalary: parseFloat(document.getElementById('baseSalary').value) || 0,
-      scheduledHours: parseFloat(document.getElementById('scheduledHours').value) || 168,
-      bonus: parseFloat(document.getElementById('bonus').value) || 0,
-      nightBonus: parseFloat(document.getElementById('nightBonus').value) || 5.50,
-      incBonus: document.getElementById('incBonus').checked,
-      ot50: document.getElementById('ot50').checked,
-      ot100: document.getElementById('ot100').checked
-    };
-    localStorage.setItem('szambonurki_settings', JSON.stringify(settings));
-    updateUI();
-  }
-
-  function saveState() {
-    localStorage.setItem('szambonurki_state', JSON.stringify({
-      isRunning: state.isRunning,
-      activeCat: state.activeCat, 
-      liveMode: state.liveMode,
-      hideEarnings: state.hideEarnings,
-      seconds: state.seconds, 
-      earned: state.earned,
-      historyEarned: state.historyEarned, 
-      historySeconds: state.historySeconds, 
-      shifts: state.shifts, 
-      activeDayKey: state.activeDayKey,
-      lastTick: state.lastTick
-    }));
-  }
-
-  function handleOt(type) {
-    if (type === 50 && document.getElementById('ot50').checked) document.getElementById('ot100').checked = false;
-    else if (type === 100 && document.getElementById('ot100').checked) document.getElementById('ot50').checked = false;
-    saveAndRecalc();
-  }
-
-  function isThirdShiftActiveToday() {
-    let shift = state.shifts[state.activeDayKey];
-    return shift === '3';
-  }
-
-  function getHourlyRate(forNetto = false, forceNight = null) {
-    let base = parseFloat(document.getElementById('baseSalary').value) || 0;
-    let hours = parseFloat(document.getElementById('scheduledHours').value) || 168;
-    if (hours <= 0) hours = 168;
-    let bonus = document.getElementById('incBonus').checked ? (parseFloat(document.getElementById('bonus').value) || 0) : 0;
-    let baseHourly = (base + bonus) / hours;
-    let total = baseHourly;
-    if (document.getElementById('ot100').checked) total += baseHourly * 1.0;
-    else if (document.getElementById('ot50').checked) total += baseHourly * 0.5;
-    
-    let isNightShift = forceNight !== null ? forceNight : isThirdShiftActiveToday();
-    if (isNightShift) {
-      total += parseFloat(document.getElementById('nightBonus').value) || 0;
-    }
-
-    if (forNetto || state.liveMode === 'netto') total *= 0.72;
-    return total;
-  }
-
-  function formatTime(sec) {
-    sec = Math.floor(sec);
-    return String(Math.floor(sec / 3600)).padStart(2, '0') + ':' +
-           String(Math.floor((sec % 3600) / 60)).padStart(2, '0') + ':' +
-           String(sec % 60).padStart(2, '0');
-  }
-
-  function selectCategory(catId) {
-    state.activeCat = catId;
-    if (!state.isRunning) toggleTimer();
-    else { updateUI(); saveState(); }
-  }
-
-  function toggleTimer() {
-    state.isRunning = !state.isRunning;
-    const btn = document.getElementById('startBtn');
-    if (state.isRunning) {
-      state.lastTick = Date.now();
-      btn.textContent = 'PAUZA'; btn.classList.add('running');
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(tick, 1000);
-    } else {
-      tick();
-      btn.textContent = 'START ZMIANY'; btn.classList.remove('running');
-      if (timerInterval) clearInterval(timerInterval);
-      state.lastTick = null;
-    }
-    updateUI(); saveState();
-  }
-
-  function tick() {
-    if (!state.isRunning) return;
-    const now = Date.now(), deltaSec = (now - state.lastTick) / 1000;
-    state.lastTick = now;
-    if (deltaSec <= 0) return;
-
-    let totalSec = Object.values(state.seconds).reduce((a,b)=>a+b, 0);
-    if (totalSec >= MAX_WORK_SECONDS && state.isRunning) { toggleTimer(); return; }
-    
-    let d = new Date(), h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
-    if ((h === 14 && m === 59 && s === 59) || (h === 22 && m === 59 && s === 59) || (h === 6 && m === 59 && s === 59)) {
-      if (state.isRunning) toggleTimer();
-    }
-    if (totalSec >= MAX_WORK_SECONDS) { if (state.isRunning) toggleTimer(); return; }
-
-    let perSecRateBrutto = getHourlyRate(false) / 3600, cat = state.activeCat;
-    if (state.seconds[cat] !== undefined) {
-      state.seconds[cat] += deltaSec;
-      state.earned[cat] += (perSecRateBrutto * deltaSec);
-    }
-    saveState(); updateUI();
-  }
-
-  function confirmReset() {
-    document.getElementById('confirmResetModal').style.display = 'flex';
-  }
-
-  function executeReset() {
-    closeModal('confirmResetModal');
-    if (state.isRunning) toggleTimer();
-    categories.forEach(c => { state.seconds[c.id] = 0; state.earned[c.id] = 0; });
-    state.activeCat = 'Praca';
-    saveState(); 
-    updateUI();
-  }
-
-  function openEditTimeModal(catId, event) {
-    event.stopPropagation();
-    editingCategory = catId;
-    let totalSec = state.seconds[catId] || 0;
-    let hrs = Math.floor(totalSec / 3600);
-    let mins = Math.floor((totalSec % 3600) / 60);
-    let secs = Math.floor(totalSec % 60);
-
-    document.getElementById('editModalTitle').textContent = `Korekta czasu: ${catId}`;
-    document.getElementById('editHours').value = hrs;
-    document.getElementById('editMinutes').value = mins;
-    document.getElementById('editSeconds').value = secs;
-    document.getElementById('editTimeModal').style.display = 'flex';
-  }
-
-  function saveManualTime() {
-    if (!editingCategory) return;
-    let hrs = parseInt(document.getElementById('editHours').value) || 0;
-    let mins = parseInt(document.getElementById('editMinutes').value) || 0;
-    let secs = parseInt(document.getElementById('editSeconds').value) || 0;
-    let newTotalSec = (hrs * 3600) + (mins * 60) + secs;
-
-    let perSecRateBrutto = getHourlyRate(false) / 3600;
-    state.seconds[editingCategory] = newTotalSec;
-    state.earned[editingCategory] = newTotalSec * perSecRateBrutto;
-
-    saveState();
-    updateUI();
-    closeModal('editTimeModal');
-  }
-
-  function openEditDayTimeModal() {
-    closeModal('dayModal');
-    if (!selectedModalDate) return;
-    document.getElementById('editDayTimeTitle').textContent = `Czas dnia: ${selectedModalDate}`;
-    
-    let sourceSecMap = {};
-    if (selectedModalDate === state.activeDayKey) {
-      sourceSecMap = state.seconds;
-    } else if (state.historySeconds[selectedModalDate]) {
-      sourceSecMap = state.historySeconds[selectedModalDate];
-    } else {
-      sourceSecMap = { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
-    }
-
-    let pTotal = sourceSecMap['Praca'] || 0;
-    let prTotal = sourceSecMap['Przerwa'] || 0;
-    let tTotal = sourceSecMap['Telefon'] || 0;
-    let wTotal = sourceSecMap['WC'] || 0;
-
-    document.getElementById('editTimePracaH').value = Math.floor(pTotal / 3600);
-    document.getElementById('editTimePracaM').value = Math.floor((pTotal % 3600) / 60);
-
-    document.getElementById('editTimePrzerwaH').value = Math.floor(prTotal / 3600);
-    document.getElementById('editTimePrzerwaM').value = Math.floor((prTotal % 3600) / 60);
-
-    document.getElementById('editTimeTelefonH').value = Math.floor(tTotal / 3600);
-    document.getElementById('editTimeTelefonM').value = Math.floor((tTotal % 3600) / 60);
-
-    document.getElementById('editTimeWCH').value = Math.floor(wTotal / 3600);
-    document.getElementById('editTimeWCM').value = Math.floor((wTotal % 3600) / 60);
-
-    document.getElementById('editDayTimeModal').style.display = 'flex';
-  }
-
-  function saveDayTimeEarnings() {
-    if (!selectedModalDate) return;
-
-    let pH = parseInt(document.getElementById('editTimePracaH').value) || 0;
-    let pM = parseInt(document.getElementById('editTimePracaM').value) || 0;
-    let pSec = (pH * 3600) + (pM * 60);
-
-    let prH = parseInt(document.getElementById('editTimePrzerwaH').value) || 0;
-    let prM = parseInt(document.getElementById('editTimePrzerwaM').value) || 0;
-    let prSec = (prH * 3600) + (prM * 60);
-
-    let tH = parseInt(document.getElementById('editTimeTelefonH').value) || 0;
-    let tM = parseInt(document.getElementById('editTimeTelefonM').value) || 0;
-    let tSec = (tH * 3600) + (tM * 60);
-
-    let wH = parseInt(document.getElementById('editTimeWCH').value) || 0;
-    let wM = parseInt(document.getElementById('editTimeWCM').value) || 0;
-    let wSec = (wH * 3600) + (wM * 60);
-
-    let newSecMap = { 'Praca': pSec, 'Przerwa': prSec, 'Telefon': tSec, 'WC': wSec };
-    let perSecRateBrutto = getHourlyRate(false) / 3600;
-    let newEarnedMap = {
-      'Praca': pSec * perSecRateBrutto,
-      'Przerwa': prSec * perSecRateBrutto,
-      'Telefon': tSec * perSecRateBrutto,
-      'WC': wSec * perSecRateBrutto
-    };
-
-    if (selectedModalDate === state.activeDayKey) {
-      state.seconds = newSecMap;
-      state.earned = newEarnedMap;
-    } else {
-      state.historySeconds[selectedModalDate] = newSecMap;
-      state.historyEarned[selectedModalDate] = newEarnedMap;
-    }
-    saveState();
-    renderCalendar();
-    updateUI();
-    closeModal('editDayTimeModal');
-  }
-
-  function changeMonth(direction) {
-    viewMonth += direction;
-    if (viewMonth > 11) {
-      viewMonth = 0;
-      viewYear++;
-    } else if (viewMonth < 0) {
-      viewMonth = 11;
-      viewYear--;
-    }
-    renderCalendar();
-  }
-
-  function renderCalendar() {
-    const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
-    document.getElementById('currentMonthTitle').textContent = `${monthNames[viewMonth]} ${viewYear}`;
-
-    let firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
-    let adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
-    let totalDays = new Date(viewYear, viewMonth + 1, 0).getDate();
-    let container = document.getElementById('calDays');
-    container.innerHTML = '';
-
-    for (let i = 0; i < adjustedFirstDay; i++) {
-      let empty = document.createElement('div');
-      container.appendChild(empty);
-    }
-
-    let todayStr = getRealDateKey();
-    let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
-
-    for (let day = 1; day <= totalDays; day++) {
-      let dayStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      let cell = document.createElement('div');
-      let isToday = (dayStr === todayStr);
-      let shift = state.shifts[dayStr];
-      let isHoliday = (shift === 'Urlop');
-
-      let dayEarnedMap = (dayStr === state.activeDayKey) ? state.earned : (state.historyEarned[dayStr] || null);
-      let daySecMap = (dayStr === state.activeDayKey) ? state.seconds : (state.historySeconds[dayStr] || null);
-      let miniBadgesHtml = '';
-
-      if (state.hideEarnings) {
-        if (daySecMap) {
-          categories.forEach(c => {
-            let s = daySecMap[c.id] || 0;
-            if (s > 0) {
-              let m = Math.round(s / 60);
-              let txt = m >= 60 ? `${(m/60).toFixed(1)}h` : `${m}m`;
-              miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${txt}</span></span>`;
-            }
-          });
-        }
-        if (isHoliday) {
-          miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff; padding: 2px 4px; font-weight: bold; text-align: center;"><span>8.0h</span></span>`;
-        }
-      } else {
-        if (dayEarnedMap) {
-          categories.forEach(c => {
-            let val = (dayEarnedMap[c.id] || 0) * mult;
-            if (val > 0) {
-              miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${val.toFixed(0)} zł</span></span>`;
-            }
-          });
-        }
-        if (isHoliday) {
-          let isNightShift = (shift === '3');
-          let rate = getHourlyRate(false, isNightShift) * mult;
-          let urlopVal = rate * 8;
-          miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff; padding: 2px 4px; font-weight: bold; text-align: center;"><span>${urlopVal.toFixed(0)} zł</span></span>`;
-        }
-      }
-
-      cell.className = 'cal-day' + (isToday ? ' today' : '');
-      
-      let sLbl = '';
-      if (shift === '1') sLbl = 'I';
-      else if (shift === '2') sLbl = 'II';
-      else if (shift === '3') sLbl = 'III';
-      else if (isHoliday) sLbl = '🌴';
-
-      cell.innerHTML = `
-        <div class="day-top-info">
-          <span style="font-weight:bold; color: #fff;">${day}</span>
-          ${sLbl ? `<span class="shift-tag">${sLbl}</span>` : ''}
-        </div>
-        <div class="day-sub-sums">${miniBadgesHtml}</div>
-      `;
-
-      cell.onclick = () => {
-        selectedModalDate = dayStr;
-        document.getElementById('modalTitle').textContent = `Zmień grafik na dzień: ${dayStr}`;
-        document.getElementById('dayModal').style.display = 'flex';
-      };
-      container.appendChild(cell);
-    }
-  }
-
-  function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-  function setDayShift(type) {
-    if (!selectedModalDate) return;
-    if (type === 'Wolne') delete state.shifts[selectedModalDate];
-    else {
-      state.shifts[selectedModalDate] = type;
-      if (type === 'Urlop' && selectedModalDate === getRealDateKey()) {
-        state.earned['Praca'] = getHourlyRate(false, false) * 8;
-        state.seconds['Praca'] = MAX_WORK_SECONDS;
-      } else if (type === '3' && selectedModalDate === getRealDateKey()) {
-        let oldRate = getHourlyRate(false, false);
-        let newRate = getHourlyRate(false, true);
-        if (oldRate > 0) {
-          categories.forEach(c => {
-            if (state.seconds[c.id] > 0) {
-              state.earned[c.id] = (state.earned[c.id] / oldRate) * newRate;
-            }
-          });
-        }
-      }
-    }
-    saveState(); renderCalendar(); updateUI(); closeModal('dayModal');
-  }
-
-  function updateUI() {
-    let currentRate = getHourlyRate(state.liveMode === 'netto');
-    document.getElementById('hourlyRate').textContent = currentRate.toFixed(2);
-    if (!document.getElementById('showPasswords').checked) {
-      document.getElementById('hourlyRate').style.webkitTextSecurity = 'disc';
-    }
-
-    let activeCat = state.activeCat || 'Praca';
-    let modeSuffix = state.liveMode === 'netto' ? ' (SZAC. NETTO)' : ' (BRUTTO)';
-    
-    let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
-    let activeEarned = (state.earned[activeCat] || 0) * mult;
-    let activeSec = state.seconds[activeCat] || 0;
-
-    if (state.hideEarnings) {
-      document.getElementById('modeLabel').textContent = `CZAS CZYNNOŚCI: ${activeCat.toUpperCase()}`;
-      document.getElementById('totalEarned').textContent = formatTime(activeSec);
-      document.getElementById('rateWrapper').style.display = 'none';
-      document.getElementById('celebBox').style.display = 'none';
-      document.querySelector('.mode-selector').style.display = 'none';
-    } else {
-      document.getElementById('modeLabel').textContent = `ZAROBIONO NA: ${activeCat.toUpperCase()}${modeSuffix}`;
-      document.getElementById('totalEarned').textContent = activeEarned.toFixed(4) + ' PLN';
-      document.getElementById('rateWrapper').style.display = 'inline';
-      document.getElementById('celebBox').style.display = 'block';
-      document.querySelector('.mode-selector').style.display = 'flex';
-    }
-
-    document.getElementById('totalTime').textContent = formatTime(activeSec);
-
-    let activeCatObj = categories.find(c => c.id === activeCat) || categories[0];
-    let counterBox = document.getElementById('mainCounterBox');
-    if (counterBox) {
-      counterBox.style.background = `linear-gradient(135deg, ${activeCatObj.color}33, #000000)`;
-      counterBox.style.borderColor = activeCatObj.color;
-    }
-
-    let grid = document.getElementById('categoriesGrid'); grid.innerHTML = '';
-    categories.forEach(c => {
-      let isSel = state.activeCat === c.id, card = document.createElement('div');
-      card.className = 'cat-card' + (isSel ? ' active' : '');
-      if (isSel) card.style.borderColor = c.color;
-      card.onclick = () => selectCategory(c.id);
-      let catEarned = (state.earned[c.id] || 0) * mult;
-      
-      let topValue = state.hideEarnings ? formatTime(state.seconds[c.id]||0) : `${catEarned.toFixed(2)} zł`;
-      let subValue = state.hideEarnings ? `Czynność: ${c.id}` : formatTime(state.seconds[c.id]||0);
-
-      card.innerHTML = `
-        <button class="edit-btn" onclick="openEditTimeModal('${c.id}', event)">✏️ Edytuj</button>
-        <div class="cat-title" style="color:${isSel?'#fff':'#ccc'}">${c.id.toUpperCase()}</div>
-        <div class="cat-money" style="color:${c.color}">${topValue}</div>
-        <div class="cat-time">${subValue}</div>
-      `;
-      grid.appendChild(card);
-    });
-    calcSummaries(mult);
-    renderCalendar();
-  }
-
-  function calcSummaries(mult) {
-    let dayKey = state.activeDayKey;
-    state.historyEarned[dayKey] = {...state.earned};
-    state.historySeconds[dayKey] = {...state.seconds};
-
-    let allDaysEarned = {};
-    Object.keys(state.historyEarned).forEach(dKey => {
-      let mapE = state.historyEarned[dKey];
-      if (mapE) {
-        let dayObj = {};
-        Object.keys(mapE).forEach(cat => dayObj[cat] = mapE[cat]);
-        allDaysEarned[dKey] = dayObj;
-      }
-    });
-
-    let allDaysSeconds = {};
-    Object.keys(state.historySeconds).forEach(dKey => {
-      let mapS = state.historySeconds[dKey];
-      if (mapS) {
-        let dayObj = {};
-        Object.keys(mapS).forEach(cat => dayObj[cat] = mapS[cat]);
-        allDaysSeconds[dKey] = dayObj;
-      }
-    });
-
-    Object.keys(state.shifts).forEach(d => {
-      if (!allDaysEarned[d]) {
-        let shiftType = state.shifts[d];
-        if (shiftType === 'Urlop') {
-          let isNightShift = (shiftType === '3');
-          let uRate = getHourlyRate(false, isNightShift) * mult;
-          allDaysEarned[d] = { 'Praca': uRate, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
-          allDaysSeconds[d] = { 'Praca': 8 * 3600, 'Przerwa': 0, 'Telefon': 0, 'WC': 0 };
-        }
-      }
-    });
-
-    function aggregateDays(dateList) {
-      let totals = { 
-        earned: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 },
-        seconds: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 }
-      };
-      dateList.forEach(k => {
-        let dayMapE = allDaysEarned[k];
-        if (dayMapE) {
-          Object.keys(dayMapE).forEach(cat => {
-            let val = (dayMapE[cat] || 0) * mult;
-            totals.earned[cat] += val;
-            totals.earned.total += val;
-          });
-        }
-        let dayMapS = allDaysSeconds[k];
-        if (dayMapS) {
-          Object.keys(dayMapS).forEach(cat => {
-            let sec = (dayMapS[cat] || 0);
-            totals.seconds[cat] += sec;
-            totals.seconds.total += sec;
-          });
-        }
-      });
-      return totals;
-    }
-
-    let now = new Date();
-    let statsObj = { 
-      earned: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 },
-      seconds: { 'Praca': 0, 'Przerwa': 0, 'Telefon': 0, 'WC': 0, total: 0 }
-    };
-    let titleText = '';
-
-    if (window.summaryType === 'week') {
-      let dOfWeek = now.getDay();
-      let baseMon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dOfWeek + (dOfWeek === 0 ? -6 : 1));
-      baseMon.setDate(baseMon.getDate() + (window.summaryOffset * 7));
-      baseMon.setHours(0,0,0,0);
-      
-      let weekDays = [];
-      let tempD = new Date(baseMon);
-      for (let i = 0; i < 7; i++) {
-        let k = tempD.toISOString().split('T')[0];
-        weekDays.push(k);
-        tempD.setDate(tempD.getDate() + 1);
-      }
-      statsObj = aggregateDays(weekDays);
-      let endSun = new Date(baseMon); endSun.setDate(endSun.getDate() + 6);
-      titleText = `Tydzień: ${baseMon.toLocaleDateString()} - ${endSun.toLocaleDateString()}`;
-
-    } else if (window.summaryType === 'month') {
-      let targetYear = now.getFullYear();
-      let targetMonth = now.getMonth() + window.summaryOffset;
-      while (targetMonth > 11) { targetMonth -= 12; targetYear++; }
-      while (targetMonth < 0) { targetMonth += 12; targetYear--; }
-
-      let monthDays = [];
-      Object.keys(allDaysEarned).forEach(k => {
-        let p = k.split('-');
-        if (parseInt(p[0]) === targetYear && parseInt(p[1])-1 === targetMonth) {
-          monthDays.push(k);
-        }
-      });
-      statsObj = aggregateDays(monthDays);
-      const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
-      titleText = `Miesiąc: ${monthNames[targetMonth]} ${targetYear}`;
-
-    } else if (window.summaryType === 'year') {
-      let targetYear = now.getFullYear() + window.summaryOffset;
-      let yearDays = [];
-      Object.keys(allDaysEarned).forEach(k => {
-        let p = k.split('-');
-        if (parseInt(p[0]) === targetYear) {
-          yearDays.push(k);
-        }
-      });
-      statsObj = aggregateDays(yearDays);
-      titleText = `Rok: ${targetYear}`;
-    }
-
-    document.getElementById('summaryTitle').textContent = titleText;
-    
-    if (state.hideEarnings) {
-      document.getElementById('sumPeriodHeader').textContent = 'Łączny czas okresu';
-      document.getElementById('sumPeriodTotal').textContent = formatTime(statsObj.seconds.total);
-    } else {
-      document.getElementById('sumPeriodHeader').textContent = 'Suma okresu';
-      document.getElementById('sumPeriodTotal').textContent = statsObj.earned.total.toFixed(2) + ' zł';
-    }
-    
-    let periodHtml = '';
-    categories.forEach(c => {
-      let amt = statsObj.earned[c.id].toFixed(2);
-      let timeStr = formatTime(statsObj.seconds[c.id]);
-      
-      if (state.hideEarnings) {
-        periodHtml += `
-          <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
-            <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${timeStr}</span></div>
-          </div>
-        `;
-      } else {
-        periodHtml += `
-          <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
-            <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${amt} zł</span></div>
-            <div class="sum-time-sub">Czas: ${timeStr}</div>
-          </div>
-        `;
-      }
-    });
-    document.getElementById('sumPeriodDetails').innerHTML = periodHtml;
-  }
-
-  loadSettings();
-  updateUI();
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-</script>
-
-</body>
-</html>
+      document.getElementById
