@@ -3,721 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Szambonurki - Centrum Dowodzenia</title>
+<title>Szambonurki</title>
 <link rel="manifest" href="./manifest.json">
 <style>
   :root {
-    --bg: #0f0f12;
-    --card: #1a1a1f;
-    --card-border: #2e2e38;
+    --bg: #121212;
+    --card: #1e1e1e;
     --green: #00e676;
-    --green-dim: rgba(0, 230, 118, 0.15);
-    --red: #ff5252;
-    --purple: #e040fb;
-    --cyan: #18ffff;
-    --blue: #448aff;
-    --yellow: #ffeb3b;
     --text: #ffffff;
-    --muted: #9e9e9e;
+    --muted: #aaaaaa;
   }
-
-  * {
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  body {
-    background-color: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 12px;
-    padding-bottom: 50px;
-    overflow-x: hidden;
-  }
-
-  /* NAGŁÓWEK */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 6px 16px;
-    border-bottom: 1px solid var(--card-border);
-    margin-bottom: 16px;
-  }
-  .header-brand {
-    display: flex;
-    flex-direction: column;
-  }
-  .header h1 {
-    font-size: 20px;
-    margin: 0;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    background: linear-gradient(90deg, #00e676, #18ffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .header-sub {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .header-btns {
-    display: flex;
-    gap: 8px;
-  }
-  .btn-action {
-    background: #25252d;
-    color: #fff;
-    border: 1px solid #3d3d4a;
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .btn-action:active {
-    transform: scale(0.96);
-    background: #33333d;
-  }
-
-  /* GŁÓWNY LICZNIK */
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 40px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px 16px; }
+  .header-brand { display: flex; align-items: center; gap: 10px; }
+  .header h1 { font-size: 18px; margin: 0; line-height: 1.2; }
+  .header-btns { display: flex; gap: 8px; }
+  .btn-action { background: #222; color: #fff; border: 1px solid #444; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  
   .main-counter {
-    background: linear-gradient(145deg, #16361c, #0d0d11);
-    border: 1.5px solid rgba(0, 230, 118, 0.4);
-    border-radius: 20px;
-    padding: 20px 16px;
-    text-align: center;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    position: relative;
-    overflow: hidden;
-  }
-  .top-controls-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-    gap: 8px;
-  }
-  .mode-selector {
-    display: flex;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
-    padding: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    flex: 1;
-    max-width: 180px;
-  }
-  .mode-btn {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: #aaa;
-    font-weight: 700;
-    padding: 6px 0;
-    border-radius: 16px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .mode-btn.active {
-    background: var(--green);
-    color: #000;
-  }
-  .btn-eye {
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 11px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .btn-eye.hidden-active {
-    background: var(--purple);
-    color: #000;
-    border-color: var(--purple);
-  }
-
-  .main-counter .label {
-    font-size: 11px;
-    color: #ccc;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    font-weight: 700;
-  }
-  .main-counter .amount {
-    font-size: 38px;
-    font-weight: 800;
-    color: var(--green);
-    font-family: "SF Mono", "Roboto Mono", monospace;
-    margin: 8px 0;
-    text-shadow: 0 2px 10px rgba(0, 230, 118, 0.25);
-  }
-  .main-counter .sub {
-    font-size: 12px;
-    color: #ddd;
-    margin-bottom: 14px;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  /* PASEK POSTĘPU ZMIANY */
-  .shift-progress-container {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    padding: 8px 10px;
-    margin-bottom: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    text-align: left;
-  }
-  .shift-progress-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #bbb;
-    margin-bottom: 5px;
-    font-family: monospace;
-  }
-  .shift-progress-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: #222;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .shift-progress-bar-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--green), var(--cyan));
-    transition: width 0.4s ease;
-  }
-
-  .counter-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  .btn-main {
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    padding: 14px 24px;
-    font-size: 15px;
-    font-weight: 800;
-    border-radius: 28px;
-    cursor: pointer;
-    flex: 1;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
-    transition: 0.2s;
-  }
-  .btn-main.running {
-    background-color: #d32f2f;
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
-  }
-
-  /* HUMORYSTYCZNY BOKS */
-  .daily-joke-box {
-    background: linear-gradient(135deg, rgba(255, 235, 59, 0.08), rgba(224, 64, 251, 0.05));
-    border: 1px dashed rgba(255, 235, 59, 0.4);
-    border-radius: 14px;
-    padding: 12px 14px;
-    margin-bottom: 18px;
-    text-align: center;
-    position: relative;
-  }
-  .daily-joke-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-  .daily-joke-box h4 {
-    margin: 0;
-    font-size: 11px;
-    color: var(--yellow);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-  .btn-next-joke {
-    background: rgba(255, 235, 59, 0.15);
-    border: 1px solid rgba(255, 235, 59, 0.3);
-    color: var(--yellow);
-    border-radius: 6px;
-    padding: 2px 8px;
-    font-size: 10px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .daily-joke-box p {
-    margin: 0;
-    font-size: 13px;
-    color: #f0f0f0;
-    font-style: italic;
-    line-height: 1.4;
-  }
-
-  /* KAFELKI KATEGORII */
-  .section-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    text-align: center;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .cat-card {
-    background-color: var(--card);
-    border: 1.5px solid var(--card-border);
-    border-radius: 14px;
-    padding: 14px 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .cat-card.active {
-    border-width: 2px;
-    background-color: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
-  }
-  .cat-title {
-    font-weight: 800;
-    font-size: 14px;
-    margin-bottom: 6px;
-    letter-spacing: 0.5px;
-  }
-  .cat-money {
-    font-size: 19px;
-    font-weight: 800;
-    margin-bottom: 4px;
-    font-family: monospace;
-  }
-  .cat-time {
-    font-size: 12px;
-    color: #ccc;
-    font-family: monospace;
-  }
-  .cat-percent {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-  .edit-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #bbb;
-    border-radius: 6px;
-    padding: 3px 7px;
-    font-size: 10px;
-    cursor: pointer;
-    z-index: 3;
-  }
-  .edit-btn:hover {
-    background: var(--green);
-    color: #000;
-  }
-
-  /* KALENDARZ / GRAFIK */
-  .schedule-section {
-    background-color: var(--card);
-    border-radius: 16px;
-    padding: 14px;
-    border: 1px solid var(--card-border);
-    margin-bottom: 18px;
-  }
-  .schedule-section h2 {
-    font-size: 15px;
-    margin-top: 0;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .month-nav {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .month-nav button {
-    background: #2b2b36;
-    color: #fff;
-    border: 1px solid #3f3f4e;
-    border-radius: 8px;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    text-align: center;
-    margin-bottom: 8px;
-  }
-  .cal-header-day {
-    font-size: 11px;
-    color: var(--muted);
-    padding: 4px 0;
-    font-weight: 700;
-  }
-  .cal-day {
-    background: #121216;
-    border: 1px solid #2b2b35;
-    border-radius: 8px;
-    padding: 4px 2px;
-    font-size: 9px;
-    cursor: pointer;
-    min-height: 72px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .cal-day.today {
-    border: 2px solid var(--green);
-    box-shadow: inset 0 0 8px rgba(0, 230, 118, 0.2);
-  }
-  .cal-day.holiday {
-    background: rgba(224, 64, 251, 0.12);
-    border-color: var(--purple);
-  }
-  .shift-tag {
-    font-size: 8px;
-    font-weight: 800;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 1px 4px;
-    border-radius: 4px;
-    color: #fff;
-  }
-  .shift-tag.s1 { background: #2e7d32; }
-  .shift-tag.s2 { background: #1565c0; }
-  .shift-tag.s3 { background: #6a1b9a; }
-
-  .day-top-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 0 3px;
-    font-size: 10px;
-  }
-  .day-sub-sums {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2px;
-    width: 100%;
-    margin-top: 3px;
-  }
-  .mini-badge {
-    font-size: 7.5px;
-    padding: 1px 2px;
-    border-radius: 3px;
-    font-weight: 800;
-    font-family: monospace;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  /* MODALE */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.82);
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(3px);
-  }
-  .modal-content {
-    background: var(--card);
-    border: 1px solid #444;
+    background: linear-gradient(135deg, #1b5e20, #000000);
+    border: 1.5px solid rgba(0, 230, 118, 0.5);
     border-radius: 16px;
     padding: 20px;
-    width: 92%;
-    max-width: 380px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    margin-bottom: 16px;
   }
-  .modal-content h3 {
-    margin-top: 0;
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
-  .shift-select-btn {
-    width: 100%;
-    background: #25252e;
-    border: 1px solid #3d3d4a;
-    color: #fff;
-    padding: 11px 12px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 600;
+  .main-counter .mode-selector {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    border-radius: 20px;
+    padding: 3px;
+    margin-bottom: 12px;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  .shift-select-btn:active {
-    background: #32323e;
+  .mode-btn {
+    flex: 1; background: transparent; border: none; color: #aaa; font-weight: bold; padding: 6px 0; border-radius: 16px; font-size: 12px; cursor: pointer;
   }
+  .mode-btn.active { background: var(--green); color: #000; }
 
-  /* WIERSZE EDYCJI GODZIN I MINUT */
+  .main-counter .label { font-size: 12px; color: #ccc; letter-spacing: 1px; text-transform: uppercase; }
+  .main-counter .amount { font-size: 36px; font-weight: bold; color: var(--green); font-family: monospace; margin: 10px 0; }
+  .main-counter .sub { font-size: 13px; color: #ddd; margin-bottom: 16px; }
+  
+  .counter-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-main {
+    background-color: #2e7d32; color: white; border: none; padding: 12px 20px;
+    font-size: 15px; font-weight: bold; border-radius: 24px; cursor: pointer; flex: 1; min-width: 130px;
+  }
+  .btn-main.running { background-color: #d32f2f; }
+
+  .daily-joke-box {
+    background: rgba(255, 235, 59, 0.08);
+    border: 1px dashed rgba(255, 235, 59, 0.4);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .daily-joke-box h4 { margin: 0 0 4px 0; font-size: 12px; color: #ffeb3b; text-transform: uppercase; letter-spacing: 0.5px; }
+  .daily-joke-box p { margin: 0; font-size: 13px; color: #eee; font-style: italic; }
+  
+  .section-title { font-size: 12px; font-weight: bold; color: var(--muted); text-align: center; margin-bottom: 10px; text-transform: uppercase; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .cat-card {
+    background-color: var(--card); border: 1px solid #333; border-radius: 12px;
+    padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; position: relative;
+  }
+  .cat-card.active { border-width: 2.5px; background-color: rgba(255,255,255,0.06); }
+  .cat-title { font-weight: bold; font-size: 15px; margin-bottom: 6px; }
+  .cat-money { font-size: 18px; font-weight: bold; margin-bottom: 4px; font-family: monospace; }
+  .cat-time { font-size: 12px; color: var(--muted); }
+  .edit-btn {
+    position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.1); border: none; color: #aaa;
+    border-radius: 4px; padding: 2px 6px; font-size: 10px; cursor: pointer;
+  }
+  .edit-btn:hover { background: var(--green); color: #000; }
+
+  .schedule-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
+  .schedule-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .month-nav { display: flex; align-items: center; gap: 6px; }
+  .month-nav button { background: #333; color: #fff; border: none; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
+  .month-nav button:hover { background: var(--green); color: #000; }
+
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: 12px; }
+  .cal-header-day { font-size: 11px; color: var(--muted); padding: 4px 0; font-weight: bold; }
+  .cal-day {
+    background: #121212; border: 1px solid #333; border-radius: 6px; padding: 3px 2px;
+    font-size: 9px; cursor: pointer; min-height: 68px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    position: relative; overflow: hidden;
+  }
+  .cal-day.today { border-color: var(--green); border-width: 1.5px; }
+  .cal-day.holiday { background: rgba(224,64,251,0.15); border-color: #e040fb; }
+  
+  .shift-tag { font-size: 8px; background: rgba(0,0,0,0.6); padding: 1px 3px; border-radius: 3px; color: #fff; z-index: 2; }
+  .day-top-info { display: flex; justify-content: space-between; width: 100%; padding: 0 2px; font-size: 9px; z-index: 2; }
+  .day-sub-sums { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; justify-content: center; z-index: 2; width: 100%; margin-top: 2px; margin-bottom: 2px; }
+  .mini-badge { font-size: 7px; padding: 1px 3px; border-radius: 2px; font-weight: bold; font-family: monospace; text-align: center; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+  .modal-content { background: var(--card); border: 1px solid #444; border-radius: 12px; padding: 20px; width: 92%; max-width: 380px; text-align: center; }
+  .modal-content h3 { margin-top: 0; font-size: 16px; }
+  .shift-select-btn { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; text-align: left; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+
   .edit-day-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 8px;
-    padding: 8px 10px;
-    background: #141418;
-    border-radius: 10px;
-    border: 1px solid #2b2b36;
-  }
-  .edit-day-label {
-    font-size: 13px;
-    font-weight: 800;
-    width: 80px;
-    text-align: left;
-  }
-  .edit-day-inputs {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  .edit-day-inputs input {
-    background: #0d0d10;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 7px;
-    border-radius: 6px;
-    font-size: 14px;
-    width: 58px;
-    text-align: center;
-    font-family: monospace;
-  }
-  .edit-day-unit {
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  /* USTAWIENIA */
-  .settings {
-    background-color: var(--card);
-    border-radius: 16px;
-    padding: 14px;
-    border: 1px solid var(--card-border);
-    margin-bottom: 18px;
-  }
-  .row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .input-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .input-group label {
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 4px;
-    font-weight: 600;
-  }
-  .input-group input {
-    background: #121216;
-    border: 1px solid #3d3d4a;
-    color: #fff;
-    padding: 10px;
+    padding: 6px 8px;
+    background: #181818;
     border-radius: 8px;
-    font-size: 14px;
-    width: 100%;
-    font-family: monospace;
+    border: 1px solid #2a2a2a;
   }
-  .switch-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-top: 1px solid #2a2a34;
-    font-size: 13px;
+  .edit-day-label { font-size: 12px; font-weight: bold; width: 70px; text-align: left; }
+  .edit-day-inputs { display: flex; gap: 6px; align-items: center; }
+  .edit-day-inputs input {
+    background: #101010; border: 1px solid #444; color: #fff; padding: 6px;
+    border-radius: 6px; font-size: 13px; width: 55px; text-align: center;
   }
-  .switch-row input[type="checkbox"] {
-    transform: scale(1.3);
-    accent-color: var(--green);
+  .edit-day-unit { font-size: 11px; color: var(--muted); }
+
+  .settings { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
+  .row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .input-group { flex: 1; display: flex; flex-direction: column; }
+  .input-group label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .input-group input {
+    background: #121212; border: 1px solid #444; color: #fff; padding: 10px;
+    border-radius: 8px; font-size: 15px; width: 100%;
   }
 
-  /* PODSUMOWANIE OKRESU */
-  .summary-section {
-    background-color: var(--card);
-    border-radius: 16px;
-    padding: 14px;
-    border: 1px solid var(--card-border);
-    margin-bottom: 18px;
-  }
-  .summary-section h2 {
-    font-size: 15px;
-    margin-top: 0;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .summary-box {
-    background: #121216;
-    border: 1px solid #2b2b36;
-    border-radius: 12px;
-    padding: 14px;
-  }
-  .summary-box h3 {
-    margin: 0 0 10px 0;
-    font-size: 14px;
-    color: var(--green);
-    border-bottom: 1px solid #2b2b36;
-    padding-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .sum-cat-block {
-    margin: 8px 0;
-    border-bottom: 1px solid #22222a;
-    padding-bottom: 6px;
-  }
-  .sum-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    margin: 2px 0;
-    font-family: monospace;
-  }
-  .sum-time-sub {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-    font-family: monospace;
-    margin-top: 3px;
-  }
-  .sum-bar-bg {
-    width: 100%;
-    height: 4px;
-    background: #222;
-    border-radius: 2px;
-    margin-top: 4px;
-    overflow: hidden;
-  }
-  .sum-bar-fill {
-    height: 100%;
-  }
+  .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #2a2a2a; font-size: 14px; }
+  .switch-row input[type="checkbox"] { transform: scale(1.3); accent-color: var(--green); }
 
-  /* CELEBRYCI */
-  .celeb-section {
-    background-color: var(--card);
-    border-radius: 16px;
-    padding: 14px;
-    border: 1px solid var(--card-border);
-  }
-  .celeb-section h2 {
-    font-size: 14px;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: var(--yellow);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .celeb-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12.5px;
-    margin: 7px 0;
-    font-family: monospace;
-    border-bottom: 1px solid #262630;
-    padding-bottom: 5px;
-  }
+  .summary-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; margin-bottom: 16px; }
+  .summary-section h2 { font-size: 16px; margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .summary-box { background: #121212; border: 1px solid #333; border-radius: 10px; padding: 12px; }
+  .summary-box h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--green); border-bottom: 1px solid #333; padding-bottom: 4px; display: flex; justify-content: space-between; }
+  .sum-row { display: flex; justify-content: space-between; font-size: 13px; margin: 4px 0; font-family: monospace; }
+  .sum-time-sub { font-size: 11px; color: var(--muted); font-family: monospace; text-align: right; margin-bottom: 4px; }
 
-  /* DEDYKOWANY WIDOK DO WYDRUKU PDF */
-  #printReportSection {
-    display: none;
-  }
+  .celeb-section { background-color: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #333; }
+  .celeb-section h2 { font-size: 15px; margin-top: 0; margin-bottom: 10px; color: #ffeb3b; }
+  .celeb-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; font-family: monospace; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px; }
+
   @media print {
-    body {
-      background: #ffffff !important;
-      color: #000000 !important;
-      padding: 10px !important;
-    }
-    .header, .main-counter, .daily-joke-box, .section-title, .grid, .schedule-section, .settings, .summary-section, .celeb-section, .modal {
-      display: none !important;
-    }
-    #printReportSection {
-      display: block !important;
-      width: 100%;
-      color: #000;
-      font-family: Arial, sans-serif;
-    }
-    .print-title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 4px;
-      border-bottom: 2px solid #000;
-      padding-bottom: 6px;
-    }
-    .print-sub {
-      font-size: 12px;
-      color: #444;
-      margin-bottom: 16px;
-    }
-    .print-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      font-size: 12px;
-    }
-    .print-table th, .print-table td {
-      border: 1px solid #999;
-      padding: 6px 8px;
-      text-align: left;
-    }
-    .print-table th {
-      background-color: #eee !important;
-      font-weight: bold;
-    }
+    body { background: #fff !important; color: #000 !important; padding: 0; }
+    .header-btns, .counter-buttons, .mode-selector, .settings, .edit-btn, details, .schedule-section, .celeb-section, .grid, .daily-joke-box { display: none !important; }
+    .summary-section { border: none !important; background: #fff !important; padding: 0 !important; }
+    .summary-box { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; }
+    .sum-row span { color: #000 !important; }
+    #sumPeriodTotal { color: #000 !important; }
   }
 </style>
 </head>
@@ -725,41 +164,23 @@
 
 <div class="header">
   <div class="header-brand">
-    <h1>SZAMBONURKI</h1>
-    <span class="header-sub" id="currentShiftIndicator">Sprawdzanie grafiku...</span>
+    <h1>Szambonurki</h1>
   </div>
   <div class="header-btns">
-    <button class="btn-action" onclick="prepareAndPrintPDF()">🖨️ Raport PDF</button>
-    <button class="btn-action" onclick="confirmReset()">🔄 Reset</button>
+    <button class="btn-action" onclick="window.print()">🖨️ PDF</button>
+    <button class="btn-action" onclick="confirmReset()">Reset</button>
   </div>
 </div>
 
-<!-- GŁÓWNY PANEL LICZNIKA -->
 <div class="main-counter" id="mainCounterBox">
-  <div class="top-controls-row">
-    <div class="mode-selector" id="modeSelectorBox">
-      <button class="mode-btn" id="modeBruttoBtn" onclick="setLiveMode('brutto')">BRUTTO</button>
-      <button class="mode-btn active" id="modeNettoBtn" onclick="setLiveMode('netto')">NETTO</button>
-    </div>
-    <button class="btn-eye" id="quickHideBtn" onclick="quickToggleHide()">👁️ Ukryj zł</button>
+  <div class="mode-selector" id="modeSelectorBox">
+    <button class="mode-btn" id="modeBruttoBtn" onclick="setLiveMode('brutto')">BRUTTO</button>
+    <button class="mode-btn active" id="modeNettoBtn" onclick="setLiveMode('netto')">NETTO</button>
   </div>
-
   <div class="label" id="modeLabel">ZAROBIONO NA: PRACA (NETTO)</div>
   <div class="amount" id="totalEarned">0.0000 PLN</div>
-  
   <div class="sub">
-    <span>Aktywna czynność: <strong id="totalTime">00:00:00</strong></span>
-    <span id="rateWrapper">Stawka: <strong id="hourlyRate" style="-webkit-text-security:disc;">0.00</strong> zł/h</span>
-  </div>
-
-  <div class="shift-progress-container">
-    <div class="shift-progress-labels">
-      <span>Czas zmiany dzisiaj: <strong id="shiftTotalTimeLabel">00:00:00</strong> / 08:00:00</span>
-      <span id="shiftProgressPercent">0%</span>
-    </div>
-    <div class="shift-progress-bar-bg">
-      <div class="shift-progress-bar-fill" id="shiftProgressBar"></div>
-    </div>
+    Czas zmiany: <span id="totalTime">00:00:00</span> <span id="rateWrapper">| Stawka: <span id="hourlyRate" style="-webkit-text-security:disc;">0.00</span> zł/h</span>
   </div>
   
   <div class="counter-buttons">
@@ -767,26 +188,20 @@
   </div>
 </div>
 
-<!-- HUMORYSTYCZNE PODSUMOWANIE DNIA -->
 <div class="daily-joke-box">
-  <div class="daily-joke-header">
-    <h4>💡 Codzienne podsumowanie zmiany</h4>
-    <button class="btn-next-joke" onclick="nextJokeManual()">Losuj inny 🎲</button>
-  </div>
-  <p id="dailyJokeText">Ładowanie raportu specjalnego...</p>
+  <h4>💡 Refleksja Dnia</h4>
+  <p id="dailyJokeText">Ładowanie mądrości szambonurka...</p>
 </div>
 
-<!-- KATEGORIE -->
-<div class="section-title">Co teraz robisz? (Kliknij kafelek by przełączyć, lub ✏️ by skorygować)</div>
+<div class="section-title">Co teraz robisz? (Kliknij kafelek, aby przełączyć, lub ✏️ by edytować czas)</div>
 <div class="grid" id="categoriesGrid"></div>
 
-<!-- KALENDARZ GRAFIKU -->
 <div class="schedule-section">
   <h2>
-    <span>📅 Grafik i Historia Dni</span>
+    <span>📅 Grafik Pracy</span>
     <div class="month-nav">
       <button onclick="changeMonth(-1)">◀</button>
-      <span id="currentMonthTitle" style="font-size:13px; color:var(--green); min-width:115px; text-align:center; font-weight:bold;"></span>
+      <span id="currentMonthTitle" style="font-size:13px; color:var(--green); min-width:110px; text-align:center;"></span>
       <button onclick="changeMonth(1)">▶</button>
     </div>
   </h2>
@@ -802,28 +217,28 @@
   <div class="calendar-grid" id="calDays"></div>
 </div>
 
-<!-- MODAL WYBORU ZMIANY W KALENDARZU -->
+<!-- MODAL GRAFIKU DNIA -->
 <div class="modal" id="dayModal">
   <div class="modal-content">
     <h3 id="modalTitle">Wybierz zmianę na dzień</h3>
-    <div class="shift-select-btn" onclick="setDayShift('1')"><span>I Zmiana (07:00 – 14:59)</span> 🟢</div>
-    <div class="shift-select-btn" onclick="setDayShift('2')"><span>II Zmiana (15:00 – 22:59)</span> 🔵</div>
-    <div class="shift-select-btn" onclick="setDayShift('3')"><span>III Zmiana Nocna (23:00 – 06:59)</span> 🟣</div>
-    <div class="shift-select-btn" onclick="setDayShift('Urlop')"><span>Urlop wypoczynkowy (8h)</span> 🌴</div>
-    <div class="shift-select-btn" onclick="openEditDayTimeModal()" style="border-color:var(--green); background:rgba(0,230,118,0.12);"><span>⏱️ Edytuj czasy dnia (godz. i min.)</span> ✏️</div>
-    <div class="shift-select-btn" onclick="setDayShift('Wolne')" style="border-color:var(--red);"><span>Dzień wolny / Wyczyść zmianę</span> ❌</div>
-    <button class="btn-action" style="width:100%; margin-top:10px; justify-content:center; background:#333;" onclick="closeModal('dayModal')">Zamknij okno</button>
+    <div class="shift-select-btn" onclick="setDayShift('1')"><span>I Zmiana (07:00 - 14:59)</span> 🟢</div>
+    <div class="shift-select-btn" onclick="setDayShift('2')"><span>II Zmiana (15:00 - 22:59)</span> 🔵</div>
+    <div class="shift-select-btn" onclick="setDayShift('3')"><span>III Zmiana Nocna (23:00 - 06:59)</span> 🟣</div>
+    <div class="shift-select-btn" onclick="setDayShift('Urlop')"><span>Urlop (Cała dniówka)</span> 🌴</div>
+    <div class="shift-select-btn" onclick="openEditDayTimeModal()" style="border-color:#00e676; background:rgba(0,230,118,0.1);"><span>⏱️ Edytuj czas dnia (godz. i min.)</span> ⏳</div>
+    <div class="shift-select-btn" onclick="setDayShift('Wolne')" style="border-color:#d32f2f;"><span>Dzień wolny / Usuń zmianę</span> ❌</div>
+    <button class="btn-action" style="width:100%; margin-top:10px; background:#444;" onclick="closeModal('dayModal')">Zamknij</button>
   </div>
 </div>
 
-<!-- MODAL RĘCZNEJ KOREKTY CZASU DNIA W KALENDARZU (GODZINY I MINUTY) -->
+<!-- MODAL RĘCZNEJ KOREKTY CZASU DNIA (GODZINY I MINUTY) -->
 <div class="modal" id="editDayTimeModal">
   <div class="modal-content">
-    <h3 id="editDayTimeTitle">Edycja czasu dnia</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:0; margin-bottom: 14px;">Wpisz przepracowane godziny i minuty:</p>
+    <h3 id="editDayTimeTitle">Czas dnia</h3>
+    <p style="font-size: 12px; color: var(--muted); margin-top:0; margin-bottom: 12px;">Wpisz przepracowane godziny i minuty:</p>
     
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:var(--red);">Praca</span>
+      <span class="edit-day-label" style="color:#d32f2f;">Praca</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimePracaH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -833,7 +248,7 @@
     </div>
 
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:var(--purple);">Przerwa</span>
+      <span class="edit-day-label" style="color:#e040fb;">Przerwa</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimePrzerwaH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -843,7 +258,7 @@
     </div>
 
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:var(--cyan);">Telefon</span>
+      <span class="edit-day-label" style="color:#18ffff;">Telefon</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimeTelefonH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -853,7 +268,7 @@
     </div>
 
     <div class="edit-day-row">
-      <span class="edit-day-label" style="color:var(--blue);">WC</span>
+      <span class="edit-day-label" style="color:#448aff;">WC</span>
       <div class="edit-day-inputs">
         <input type="number" id="editTimeWCH" min="0" max="24" value="0">
         <span class="edit-day-unit">godz</span>
@@ -862,16 +277,16 @@
       </div>
     </div>
 
-    <button class="btn-action" style="width:100%; margin-top:12px; justify-content:center; background:#2e7d32; padding:12px;" onclick="saveDayTimeEarnings()">💾 Zapisz i przelicz dzień</button>
-    <button class="btn-action" style="width:100%; margin-top:8px; justify-content:center; background:#444; padding:10px;" onclick="closeModal('editDayTimeModal')">Anuluj</button>
+    <button class="btn-action" style="width:100%; margin-top:10px; background:#2e7d32; padding:10px; font-weight:bold;" onclick="saveDayTimeEarnings()">Zapisz i przelicz</button>
+    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editDayTimeModal')">Anuluj</button>
   </div>
 </div>
 
-<!-- MODAL KOREKTY BIEŻĄCEGO KAFELKA -->
+<!-- MODAL RĘCZNEJ KOREKTY CZASU BIEŻĄCEGO KAFELKA -->
 <div class="modal" id="editTimeModal">
   <div class="modal-content">
     <h3 id="editModalTitle">Korekta czasu</h3>
-    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz dokładny czas dla dzisiejszej czynności:</p>
+    <p style="font-size: 12px; color: var(--muted); margin-top:0;">Wpisz nowy czas dla tej czynności:</p>
     <div class="row">
       <div class="input-group">
         <label>Godziny</label>
@@ -886,38 +301,37 @@
         <input type="number" id="editSeconds" min="0" max="59" value="0">
       </div>
     </div>
-    <button class="btn-action" style="width:100%; margin-top:10px; justify-content:center; background:#2e7d32; padding:12px;" onclick="saveManualTime()">Zapisz korektę</button>
-    <button class="btn-action" style="width:100%; margin-top:6px; justify-content:center; background:#444; padding:10px;" onclick="closeModal('editTimeModal')">Anuluj</button>
+    <button class="btn-action" style="width:100%; margin-top:10px; background:#2e7d32; padding:10px; font-weight:bold;" onclick="saveManualTime()">Zapisz korektę</button>
+    <button class="btn-action" style="width:100%; margin-top:6px; background:#444;" onclick="closeModal('editTimeModal')">Anuluj</button>
   </div>
 </div>
 
-<!-- MODAL POTWIERDZENIA RESETU DNIA -->
+<!-- MODAL POTWIERDZENIA RESETU -->
 <div class="modal" id="confirmResetModal">
   <div class="modal-content">
-    <h3>⚠️ Reset dzisiejszej zmiany</h3>
-    <p style="font-size: 13px; color: #ddd; margin-bottom: 20px;">Czy na pewno chcesz wyzerować dzisiejszy licznik? Wcześniejsze dni w kalendarzu oraz historia pozostaną nietknięte.</p>
+    <h3>⚠️ Potwierdzenie</h3>
+    <p style="font-size: 13px; color: #ddd; margin-bottom: 20px;">Czy na pewno chcesz wyzerować dzisiejszy licznik? (Historia i grafik pozostaną bez zmian).</p>
     <div style="display: flex; gap: 10px;">
-      <button class="btn-action" style="flex: 1; justify-content:center; background: #d32f2f; padding: 12px; font-weight: bold;" onclick="executeReset()">Tak, zeruj dzisiaj</button>
-      <button class="btn-action" style="flex: 1; justify-content:center; background: #444; padding: 12px;" onclick="closeModal('confirmResetModal')">Anuluj</button>
+      <button class="btn-action" style="flex: 1; background: #d32f2f; padding: 12px; font-weight: bold;" onclick="executeReset()">Tak, zeruj dzisiaj</button>
+      <button class="btn-action" style="flex: 1; background: #444; padding: 12px;" onclick="closeModal('confirmResetModal')">Anuluj</button>
     </div>
   </div>
 </div>
 
-<!-- USTAWIENIA -->
 <details class="settings">
-  <summary style="font-size: 15px; font-weight: 800; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
-    <span>⚙️ Ustawienia wypłaty i prywatności</span>
+  <summary style="font-size: 16px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+    <span>⚙️ Ustawienia wypłaty i kopia danych</span>
     <span style="font-size: 12px; color: var(--green);">▼ Rozwiń</span>
   </summary>
   <div style="margin-top: 14px;">
     <div class="row">
       <div class="input-group">
         <label>Podstawa Brutto (zł)</label>
-        <input type="password" id="baseSalary" value="6180" oninput="saveAndRecalc()">
+        <input type="password" id="baseSalary" value="5780" oninput="saveAndRecalc()">
       </div>
       <div class="input-group">
         <label>Godziny w grafiku (mies.)</label>
-        <input type="number" id="scheduledHours" value="168" oninput="saveAndRecalc()">
+        <input type="number" id="scheduledHours" value="168" style="-webkit-text-security:none;" oninput="saveAndRecalc()">
       </div>
     </div>
     <div class="row">
@@ -932,7 +346,7 @@
     </div>
 
     <div class="switch-row">
-      <span>👁️ Ukryj zarobki wszędzie (pokazuj sam czas)</span>
+      <span>Ukryj kwoty (pokazuj tylko czas)</span>
       <input type="checkbox" id="hideEarnings" onchange="toggleHideEarnings()">
     </div>
     <div class="switch-row">
@@ -948,18 +362,23 @@
       <input type="checkbox" id="ot100" onchange="handleOt(100)">
     </div>
     <div class="switch-row">
-      <span>Odkryj kwoty wpisane w polach powyżej</span>
+      <span>Pokaż/odkryj wpisane kwoty w polach</span>
       <input type="checkbox" id="showPasswords" onchange="togglePasswordVisibility()">
+    </div>
+
+    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #333; display: flex; gap: 8px;">
+      <button class="btn-action" style="flex:1;" onclick="exportBackup()">💾 Pobierz kopię</button>
+      <button class="btn-action" style="flex:1;" onclick="document.getElementById('importFile').click()">📂 Wczytaj kopię</button>
+      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importBackup(event)">
     </div>
   </div>
 </details>
 
-<!-- PODSUMOWANIA TYGODNIOWE / MIESIĘCZNE / ROCZNE -->
 <div class="summary-section">
   <h2>
     <span id="summaryTitle">Podsumowanie</span>
     <div style="display: flex; gap: 6px; align-items: center;">
-      <button class="btn-action" style="padding: 5px 10px; font-size: 11px;" onclick="prepareAndPrintPDF()">🖨️ Eksport PDF</button>
+      <button class="btn-action" style="padding: 4px 8px; font-size: 11px;" onclick="window.print()">🖨️ PDF</button>
       <div class="month-nav">
         <button onclick="changeSummaryOffset(-1)">◀</button>
         <button onclick="changeSummaryOffset(1)">▶</button>
@@ -974,45 +393,22 @@
   </div>
 
   <div class="summary-box">
-    <h3>
-      <span id="sumPeriodHeader">Suma okresu</span>
-      <span id="sumPeriodTotal" style="color:var(--green); font-size:16px;">0.00 zł</span>
-    </h3>
+    <h3><span id="sumPeriodHeader">Suma okresu</span><span id="sumPeriodTotal" style="color:var(--green); font-size:16px;">0.00 zł</span></h3>
     <div id="sumPeriodDetails"></div>
   </div>
 </div>
 
-<!-- LICZNIK CELEBRYTÓW OD PÓŁNOCY -->
 <div class="celeb-section" id="celebBox">
-  <h2>
-    <span>🚀 Zarobki dzisiaj (od 00:00)</span>
-    <span style="font-size:11px; color:var(--muted); font-weight:normal;">Na żywo</span>
-  </h2>
+  <h2>🚀 Zarobki dzisiaj (od północy)</h2>
   <div class="celeb-row"><span>Elon Musk:</span> <span id="celebMusk" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Jeff Bezos:</span> <span id="celebBezos" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Cristiano Ronaldo:</span> <span id="celebRonaldo" style="color: var(--green);">0.00 zł</span></div>
   <div class="celeb-row"><span>Robert Lewandowski:</span> <span id="celebLewy" style="color: var(--green);">0.00 zł</span></div>
-  <div class="celeb-row" style="border-bottom:none; padding-top:4px;">
-    <span style="color:var(--cyan); font-weight:bold;">Twoja zmiana dzisiaj:</span>
-    <span id="celebUserToday" style="color: var(--cyan); font-weight:bold;">0.00 zł</span>
-  </div>
-</div>
-
-<!-- UKRYTA SEKCJA DO WYDRUKU PDF -->
-<div id="printReportSection">
-  <div class="print-title">Raport Czasu Pracy i Zarobków - Szambonurki</div>
-  <div class="print-sub" id="printDateSub">Wygenerowano: </div>
-  
-  <h4>1. Raport Dzienny (Dzisiejsza zmiana)</h4>
-  <table class="print-table" id="printDailyTable"></table>
-
-  <h4 id="printPeriodHeading">2. Podsumowanie Okresu</h4>
-  <table class="print-table" id="printPeriodTable"></table>
 </div>
 
 <script>
   const categories = [
-    { id: 'Praca', color: '#ff5252' },
+    { id: 'Praca', color: '#d32f2f' },
     { id: 'Przerwa', color: '#e040fb' },
     { id: 'Telefon', color: '#18ffff' },
     { id: 'WC', color: '#448aff' }
@@ -1041,50 +437,34 @@
   let editingCategory = null;
   let viewYear = new Date().getFullYear();
   let viewMonth = new Date().getMonth();
-  let manualJokeOffset = 0;
   const MAX_WORK_SECONDS = 8 * 3600;
 
-  // Rozbudowana baza humorystycznych tekstów
   const dailyJokes = [
-    "Dzisiaj Twoje posiedzenia w WC mają wyższą stopę zwrotu niż obligacje skarbowe!",
-    "Telefon w dłoni to nie opierdalanie się – to zdalne monitorowanie procesów biologicznych.",
-    "Każda minuta na kiblu to minuta, za którą płaci zakład. Sraj powoli i z godnością!",
-    "Elon Musk wysyła rakiety w kosmos, ale to Ty bijesz rekordy zysku na sedesie.",
-    "Praca uszlachetnia, ale to Przerwa i Telefon budują prawdziwy kapitał psychiczny.",
-    "Pseudo premia może i jest wirtualna, ale czas spędzony na WC jest jak najbardziej realny!",
-    "Gdyby płacili Ci od każdego przescrollowanego kilometra na telefonie, miałbyś już jacht.",
-    "Pamiętaj: na III zmianie czas w WC płynie dwa razy wolniej, ale z dodatkiem nocnym smakuje lepiej!",
-    "Szambo płynie, wirówka kręci, a Twoje złotówki za przeglądanie internetu lecą na konto.",
-    "Złota zasada operatora: nigdy nie rób w czasie wolnym tego, co możesz zrobić w pracy na płatnym WC."
+    "Dzisiaj Twoje wizyty w WC generują czysty zysk. Kto bogatemu zabroni?",
+    "Telefon w dłoni to nie praca na gapę, to strategiczny lobbying!",
+    "Szambo nurkuje, a Ty płyniesz po milion. Trzymaj tak dalej!",
+    "Praca uszlachetnia, ale przerwa i telefon dają najwyższe stopy zwrotu.",
+    "Każda minuta spędzona na kiblu to inwestycja w Twój wewnętrzny spokój (i budżet).",
+    "Głowa do góry! Elon Musk może i ma SpaceX, ale czy zarabia na kiblu tyle co Ty?",
+    "Woda w oczyszczalni płynie, a Twoje statystyki rosną jak na drożdżach."
   ];
 
-  function updateJokeBanner() {
-    let dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    let idx = (dayOfYear + manualJokeOffset) % dailyJokes.length;
-    let baseJoke = dailyJokes[idx];
-
-    let wcSec = state.seconds['WC'] || 0;
-    let telSec = state.seconds['Telefon'] || 0;
-    let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
-    let wcMoney = ((state.earned['WC'] || 0) * mult).toFixed(2);
-    let telMoney = ((state.earned['Telefon'] || 0) * mult).toFixed(2);
-
-    let dynamicAdd = "";
-    if (!state.hideEarnings && (wcSec > 60 || telSec > 60)) {
-      dynamicAdd = ` (Dziś na WC: ${wcMoney} zł, Telefon: ${telMoney} zł!)`;
-    } else if (state.hideEarnings && (wcSec > 60 || telSec > 60)) {
-      dynamicAdd = ` (Dziś na WC: ${Math.floor(wcSec/60)} min, Telefon: ${Math.floor(telSec/60)} min!)`;
-    }
-
-    document.getElementById('dailyJokeText').textContent = `„${baseJoke}”${dynamicAdd}`;
+  function safeNum(val, fallback = 0) {
+    let n = Number(val);
+    return (isNaN(n) || !isFinite(n)) ? fallback : n;
   }
 
-  function nextJokeManual() {
-    manualJokeOffset++;
-    updateJokeBanner();
+  function setDailyJoke() {
+    try {
+      let now = new Date();
+      let start = new Date(now.getFullYear(), 0, 0);
+      let dayOfYear = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+      let jokeIndex = Math.abs(dayOfYear) % dailyJokes.length;
+      document.getElementById('dailyJokeText').textContent = `„${dailyJokes[jokeIndex]}”`;
+    } catch (e) {}
   }
 
-  // Klucz doby roboczej (przed 07:00 rano zalicza do poprzedniego dnia z uwagi na III zmianę 23:00-06:59)
+  // Format daty lokalnej YYYY-MM-DD (z uwzględnieniem doby roboczej do 06:59 dla nocki)
   function getRealDateKey(customDate = null) {
     let d = customDate ? new Date(customDate) : new Date();
     if (!customDate && d.getHours() < 7) {
@@ -1096,9 +476,11 @@
     return `${year}-${month}-${day}`;
   }
 
-  // Precyzyjne wyliczanie znacznika końca zmiany
   function getShiftEndTimestamp(dayKey, shiftType) {
-    let [y, m, d] = dayKey.split('-').map(Number);
+    if (!dayKey || typeof dayKey !== 'string') return Date.now() + 3600000;
+    let parts = dayKey.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) return Date.now() + 3600000;
+    let [y, m, d] = parts;
     let endDate = new Date(y, m - 1, d);
     if (shiftType === '1') {
       endDate.setHours(14, 59, 59, 999);
@@ -1111,19 +493,6 @@
       endDate.setHours(23, 59, 59, 999);
     }
     return endDate.getTime();
-  }
-
-  function toggleHideEarnings() {
-    state.hideEarnings = document.getElementById('hideEarnings').checked;
-    saveState();
-    updateUI();
-  }
-
-  function quickToggleHide() {
-    state.hideEarnings = !state.hideEarnings;
-    document.getElementById('hideEarnings').checked = state.hideEarnings;
-    saveState();
-    updateUI();
   }
 
   function setSummaryType(type) {
@@ -1140,8 +509,887 @@
     updateUI();
   }
 
+  function toggleHideEarnings() {
+    state.hideEarnings = document.getElementById('hideEarnings').checked;
+    saveState();
+    updateUI();
+  }
+
+  function sanitizeMap(mapObj) {
+    let clean = {};
+    if (!mapObj || typeof mapObj !== 'object') return clean;
+    Object.keys(mapObj).forEach(dayKey => {
+      if (mapObj[dayKey] && typeof mapObj[dayKey] === 'object') {
+        clean[dayKey] = {
+          Praca: safeNum(mapObj[dayKey].Praca, 0),
+          Przerwa: safeNum(mapObj[dayKey].Przerwa, 0),
+          Telefon: safeNum(mapObj[dayKey].Telefon, 0),
+          WC: safeNum(mapObj[dayKey].WC, 0)
+        };
+      }
+    });
+    return clean;
+  }
+
   function loadSettings() {
-    const saved = localStorage.getItem('szambonurki_settings');
-    if (saved) {
-      const s = JSON.parse(saved);
-      document.getElementById
+    setDailyJoke();
+    try {
+      const saved = localStorage.getItem('szambonurki_settings');
+      if (saved) {
+        const s = JSON.parse(saved);
+        document.getElementById('baseSalary').value = safeNum(s.baseSalary, 5780);
+        document.getElementById('scheduledHours').value = safeNum(s.scheduledHours, 168);
+        document.getElementById('bonus').value = safeNum(s.bonus, 300);
+        document.getElementById('nightBonus').value = safeNum(s.nightBonus, 5.50);
+        document.getElementById('incBonus').checked = s.incBonus ?? true;
+        document.getElementById('ot50').checked = s.ot50 ?? false;
+        document.getElementById('ot100').checked = s.ot100 ?? false;
+      }
+    } catch (e) {
+      console.error("Błąd odczytu ustawień:", e);
+    }
+
+    try {
+      const savedState = localStorage.getItem('szambonurki_state');
+      if (savedState) {
+        const st = JSON.parse(savedState);
+        state.activeCat = categories.some(c => c.id === st.activeCat) ? st.activeCat : 'Praca';
+        state.liveMode = (st.liveMode === 'brutto' || st.liveMode === 'netto') ? st.liveMode : 'netto';
+        state.hideEarnings = Boolean(st.hideEarnings);
+        state.isRunning = Boolean(st.isRunning);
+        state.lastTick = st.lastTick ? safeNum(st.lastTick, null) : null;
+
+        categories.forEach(c => {
+          state.seconds[c.id] = st.seconds ? safeNum(st.seconds[c.id], 0) : 0;
+          state.earned[c.id] = st.earned ? safeNum(st.earned[c.id], 0) : 0;
+        });
+
+        // Odzyskiwanie historii nawet ze starszych kluczy
+        let rawHistEarned = st.historyEarned || st.history || {};
+        let rawHistSeconds = st.historySeconds || {};
+        state.historyEarned = sanitizeMap(rawHistEarned);
+        state.historySeconds = sanitizeMap(rawHistSeconds);
+
+        // Jeśli w dawnej historii były tylko kwoty, odtwórz przybliżony czas
+        let approxRate = getHourlyRate(false, false) / 3600;
+        if (approxRate > 0) {
+          Object.keys(state.historyEarned).forEach(dk => {
+            if (!state.historySeconds[dk]) {
+              state.historySeconds[dk] = {
+                Praca: state.historyEarned[dk].Praca / approxRate,
+                Przerwa: state.historyEarned[dk].Przerwa / approxRate,
+                Telefon: state.historyEarned[dk].Telefon / approxRate,
+                WC: state.historyEarned[dk].WC / approxRate
+              };
+            }
+          });
+        }
+
+        state.shifts = (st.shifts && typeof st.shifts === 'object') ? st.shifts : {};
+        state.activeDayKey = (st.activeDayKey && typeof st.activeDayKey === 'string') ? st.activeDayKey : getRealDateKey();
+      } else {
+        state.activeDayKey = getRealDateKey();
+      }
+    } catch (e) {
+      console.error("Błąd odczytu stanu, przywracanie bezpiecznych wartości:", e);
+      state.activeDayKey = getRealDateKey();
+    }
+
+    document.getElementById('hideEarnings').checked = state.hideEarnings;
+
+    let currentRealDay = getRealDateKey();
+    const now = Date.now();
+
+    // 1. Rozliczenie czasu w tle dla aktywnego dnia
+    if (state.isRunning && state.lastTick) {
+      let activeShift = state.shifts[state.activeDayKey];
+      let shiftEndTime = getShiftEndTimestamp(state.activeDayKey, activeShift);
+      let effectiveNow = Math.min(now, shiftEndTime);
+      const elapsedSec = (effectiveNow - state.lastTick) / 1000;
+
+      if (elapsedSec > 0) {
+        let totalSec = Object.values(state.seconds).reduce((a, b) => a + b, 0);
+        let allowedSec = Math.min(elapsedSec, Math.max(0, MAX_WORK_SECONDS - totalSec));
+        if (allowedSec > 0) {
+          let isNight = (activeShift === '3');
+          let perSecRateBrutto = getHourlyRate(false, isNight) / 3600;
+          let cat = state.activeCat;
+          if (state.seconds[cat] !== undefined) {
+            state.seconds[cat] += allowedSec;
+            state.earned[cat] += (perSecRateBrutto * allowedSec);
+          }
+        }
+      }
+
+      if (now >= shiftEndTime || Object.values(state.seconds).reduce((a, b) => a + b, 0) >= MAX_WORK_SECONDS) {
+        state.isRunning = false;
+        state.lastTick = null;
+      } else {
+        state.lastTick = now;
+      }
+    }
+
+    // 2. Jeśli zmieniła się doba robocza, archiwizujemy poprzedni dzień i zerujemy dzisiejszy licznik
+    if (state.activeDayKey !== currentRealDay) {
+      let shiftTotal = Object.values(state.earned).reduce((a, b) => a + b, 0);
+      let secTotal = Object.values(state.seconds).reduce((a, b) => a + b, 0);
+      
+      if (shiftTotal > 0 || secTotal > 0) {
+        state.historyEarned[state.activeDayKey] = { ...state.earned };
+        state.historySeconds[state.activeDayKey] = { ...state.seconds };
+      }
+
+      categories.forEach(c => {
+        state.seconds[c.id] = 0;
+        state.earned[c.id] = 0;
+      });
+
+      state.activeDayKey = currentRealDay;
+      state.isRunning = false;
+      state.lastTick = null;
+
+      checkAutoStartShift(currentRealDay);
+      saveState();
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    const btn = document.getElementById('startBtn');
+    if (state.isRunning) {
+      btn.textContent = 'PAUZA';
+      btn.classList.add('running');
+      timerInterval = setInterval(tick, 1000);
+    } else {
+      btn.textContent = 'START ZMIANY';
+      btn.classList.remove('running');
+    }
+
+    setLiveMode(state.liveMode, false);
+    
+    if (celebInterval) clearInterval(celebInterval);
+    celebInterval = setInterval(updateCelebCounters, 1000);
+    updateCelebCounters();
+  }
+
+  function updateCelebCounters() {
+    try {
+      const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      const elapsedSec = Math.max(0, (now.getTime() - midnight.getTime()) / 1000);
+      
+      const muskPerSec = 634197;
+      const bezosPerSec = 450000;
+      const ronaldoPerSec = 25.36;
+      const lewyPerSec = 3.80;
+
+      const elMusk = document.getElementById('celebMusk');
+      const elBezos = document.getElementById('celebBezos');
+      const elRonaldo = document.getElementById('celebRonaldo');
+      const elLewy = document.getElementById('celebLewy');
+
+      if (elMusk) elMusk.textContent = (elapsedSec * muskPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
+      if (elBezos) elBezos.textContent = (elapsedSec * bezosPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
+      if (elRonaldo) elRonaldo.textContent = (elapsedSec * ronaldoPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
+      if (elLewy) elLewy.textContent = (elapsedSec * lewyPerSec).toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' zł';
+    } catch (e) {}
+  }
+
+  function checkAutoStartShift(dayKey) {
+    let shift = state.shifts[dayKey];
+    if (shift && shift !== 'Wolne') {
+      if (shift === 'Urlop') {
+        let rate = getHourlyRate(false, false);
+        state.earned['Praca'] = rate * 8;
+        state.seconds['Praca'] = MAX_WORK_SECONDS;
+      } else {
+        state.activeCat = 'Praca';
+      }
+    }
+  }
+
+  function setLiveMode(mode, save = true) {
+    state.liveMode = mode;
+    document.getElementById('modeBruttoBtn').className = 'mode-btn' + (mode === 'brutto' ? ' active' : '');
+    document.getElementById('modeNettoBtn').className = 'mode-btn' + (mode === 'netto' ? ' active' : '');
+    if (save) { saveState(); updateUI(); }
+  }
+
+  function togglePasswordVisibility() {
+    const show = document.getElementById('showPasswords').checked;
+    ['baseSalary', 'bonus', 'nightBonus'].forEach(id => {
+      let input = document.getElementById(id);
+      if (input) input.type = show ? 'text' : 'password';
+    });
+    document.getElementById('hourlyRate').style.webkitTextSecurity = show ? 'none' : 'disc';
+  }
+
+  function saveAndRecalc() {
+    const settings = {
+      baseSalary: safeNum(document.getElementById('baseSalary').value, 0),
+      scheduledHours: safeNum(document.getElementById('scheduledHours').value, 168),
+      bonus: safeNum(document.getElementById('bonus').value, 0),
+      nightBonus: safeNum(document.getElementById('nightBonus').value, 5.50),
+      incBonus: document.getElementById('incBonus').checked,
+      ot50: document.getElementById('ot50').checked,
+      ot100: document.getElementById('ot100').checked
+    };
+    localStorage.setItem('szambonurki_settings', JSON.stringify(settings));
+    updateUI();
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem('szambonurki_state', JSON.stringify({
+        isRunning: state.isRunning,
+        activeCat: state.activeCat, 
+        liveMode: state.liveMode,
+        hideEarnings: state.hideEarnings,
+        seconds: state.seconds, 
+        earned: state.earned,
+        historyEarned: state.historyEarned, 
+        historySeconds: state.historySeconds, 
+        shifts: state.shifts, 
+        activeDayKey: state.activeDayKey,
+        lastTick: state.lastTick
+      }));
+    } catch (e) {}
+  }
+
+  function handleOt(type) {
+    if (type === 50 && document.getElementById('ot50').checked) document.getElementById('ot100').checked = false;
+    else if (type === 100 && document.getElementById('ot100').checked) document.getElementById('ot50').checked = false;
+    saveAndRecalc();
+  }
+
+  function isThirdShiftActiveToday() {
+    let shift = state.shifts[state.activeDayKey];
+    return shift === '3';
+  }
+
+  function getHourlyRate(forNetto = false, forceNight = null) {
+    let base = safeNum(document.getElementById('baseSalary').value, 5780);
+    let hours = safeNum(document.getElementById('scheduledHours').value, 168);
+    if (hours <= 0) hours = 168;
+    let bonus = document.getElementById('incBonus').checked ? safeNum(document.getElementById('bonus').value, 0) : 0;
+    let baseHourly = (base + bonus) / hours;
+    let total = baseHourly;
+    if (document.getElementById('ot100').checked) total += baseHourly * 1.0;
+    else if (document.getElementById('ot50').checked) total += baseHourly * 0.5;
+    
+    let isNightShift = forceNight !== null ? forceNight : isThirdShiftActiveToday();
+    if (isNightShift) {
+      total += safeNum(document.getElementById('nightBonus').value, 0);
+    }
+
+    if (forNetto) total *= 0.72;
+    return safeNum(total, 0);
+  }
+
+  function formatTime(sec) {
+    sec = Math.max(0, Math.floor(safeNum(sec, 0)));
+    return String(Math.floor(sec / 3600)).padStart(2, '0') + ':' +
+           String(Math.floor((sec % 3600) / 60)).padStart(2, '0') + ':' +
+           String(sec % 60).padStart(2, '0');
+  }
+
+  function selectCategory(catId) {
+    state.activeCat = catId;
+    if (!state.isRunning) toggleTimer();
+    else { updateUI(); saveState(); }
+  }
+
+  function toggleTimer() {
+    state.isRunning = !state.isRunning;
+    const btn = document.getElementById('startBtn');
+    if (state.isRunning) {
+      state.lastTick = Date.now();
+      btn.textContent = 'PAUZA';
+      btn.classList.add('running');
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(tick, 1000);
+    } else {
+      if (timerInterval) clearInterval(timerInterval);
+      state.lastTick = null;
+      btn.textContent = 'START ZMIANY';
+      btn.classList.remove('running');
+    }
+    updateUI();
+    saveState();
+  }
+
+  function tick() {
+    if (!state.isRunning) return;
+    const now = Date.now();
+    const deltaSec = state.lastTick ? (now - state.lastTick) / 1000 : 1;
+    state.lastTick = now;
+    if (deltaSec <= 0) return;
+
+    let totalSec = Object.values(state.seconds).reduce((a, b) => a + safeNum(b, 0), 0);
+    if (totalSec >= MAX_WORK_SECONDS) {
+      toggleTimer();
+      return;
+    }
+    
+    let activeShift = state.shifts[state.activeDayKey];
+    if (activeShift && activeShift !== 'Wolne') {
+      let shiftEndTime = getShiftEndTimestamp(state.activeDayKey, activeShift);
+      if (now >= shiftEndTime) {
+        toggleTimer();
+        return;
+      }
+    } else {
+      // Jeśli nie zaznaczono zmiany w kalendarzu, zatrzymaj na standardowych końcach zmian
+      let d = new Date();
+      let h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+      if ((h === 14 && m === 59 && s >= 58) || (h === 22 && m === 59 && s >= 58) || (h === 6 && m === 59 && s >= 58)) {
+        toggleTimer();
+        return;
+      }
+    }
+
+    let isNight = (activeShift === '3');
+    let perSecRateBrutto = getHourlyRate(false, isNight) / 3600;
+    let cat = state.activeCat;
+    if (state.seconds[cat] !== undefined) {
+      state.seconds[cat] = safeNum(state.seconds[cat], 0) + deltaSec;
+      state.earned[cat] = safeNum(state.earned[cat], 0) + (perSecRateBrutto * deltaSec);
+    }
+    saveState(); 
+    updateUI();
+  }
+
+  function confirmReset() {
+    document.getElementById('confirmResetModal').style.display = 'flex';
+  }
+
+  function executeReset() {
+    closeModal('confirmResetModal');
+    if (state.isRunning) toggleTimer();
+    categories.forEach(c => {
+      state.seconds[c.id] = 0;
+      state.earned[c.id] = 0;
+    });
+    delete state.historyEarned[state.activeDayKey];
+    delete state.historySeconds[state.activeDayKey];
+    state.activeCat = 'Praca';
+    saveState(); 
+    updateUI();
+  }
+
+  function openEditTimeModal(catId, event) {
+    event.stopPropagation();
+    editingCategory = catId;
+    let totalSec = safeNum(state.seconds[catId], 0);
+    let hrs = Math.floor(totalSec / 3600);
+    let mins = Math.floor((totalSec % 3600) / 60);
+    let secs = Math.floor(totalSec % 60);
+
+    document.getElementById('editModalTitle').textContent = `Korekta czasu: ${catId}`;
+    document.getElementById('editHours').value = hrs;
+    document.getElementById('editMinutes').value = mins;
+    document.getElementById('editSeconds').value = secs;
+    document.getElementById('editTimeModal').style.display = 'flex';
+  }
+
+  function saveManualTime() {
+    if (!editingCategory) return;
+    let hrs = safeNum(document.getElementById('editHours').value, 0);
+    let mins = safeNum(document.getElementById('editMinutes').value, 0);
+    let secs = safeNum(document.getElementById('editSeconds').value, 0);
+    let newTotalSec = (hrs * 3600) + (mins * 60) + secs;
+
+    let perSecRateBrutto = getHourlyRate(false) / 3600;
+    state.seconds[editingCategory] = newTotalSec;
+    state.earned[editingCategory] = newTotalSec * perSecRateBrutto;
+
+    saveState();
+    updateUI();
+    closeModal('editTimeModal');
+  }
+
+  function openEditDayTimeModal() {
+    closeModal('dayModal');
+    if (!selectedModalDate) return;
+    document.getElementById('editDayTimeTitle').textContent = `Czas dnia: ${selectedModalDate}`;
+    
+    let sourceSecMap = {};
+    if (selectedModalDate === state.activeDayKey) {
+      sourceSecMap = state.seconds;
+    } else if (state.historySeconds[selectedModalDate]) {
+      sourceSecMap = state.historySeconds[selectedModalDate];
+    } else {
+      sourceSecMap = { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0 };
+    }
+
+    let pTotal = safeNum(sourceSecMap['Praca'], 0);
+    let prTotal = safeNum(sourceSecMap['Przerwa'], 0);
+    let tTotal = safeNum(sourceSecMap['Telefon'], 0);
+    let wTotal = safeNum(sourceSecMap['WC'], 0);
+
+    document.getElementById('editTimePracaH').value = Math.floor(pTotal / 3600);
+    document.getElementById('editTimePracaM').value = Math.floor((pTotal % 3600) / 60);
+
+    document.getElementById('editTimePrzerwaH').value = Math.floor(prTotal / 3600);
+    document.getElementById('editTimePrzerwaM').value = Math.floor((prTotal % 3600) / 60);
+
+    document.getElementById('editTimeTelefonH').value = Math.floor(tTotal / 3600);
+    document.getElementById('editTimeTelefonM').value = Math.floor((tTotal % 3600) / 60);
+
+    document.getElementById('editTimeWCH').value = Math.floor(wTotal / 3600);
+    document.getElementById('editTimeWCM').value = Math.floor((wTotal % 3600) / 60);
+
+    document.getElementById('editDayTimeModal').style.display = 'flex';
+  }
+
+  function saveDayTimeEarnings() {
+    if (!selectedModalDate) return;
+
+    if (selectedModalDate === state.activeDayKey && state.isRunning) {
+      toggleTimer();
+    }
+
+    let pH = safeNum(document.getElementById('editTimePracaH').value, 0);
+    let pM = safeNum(document.getElementById('editTimePracaM').value, 0);
+    let pSec = (pH * 3600) + (pM * 60);
+
+    let prH = safeNum(document.getElementById('editTimePrzerwaH').value, 0);
+    let prM = safeNum(document.getElementById('editTimePrzerwaM').value, 0);
+    let prSec = (prH * 3600) + (prM * 60);
+
+    let tH = safeNum(document.getElementById('editTimeTelefonH').value, 0);
+    let tM = safeNum(document.getElementById('editTimeTelefonM').value, 0);
+    let tSec = (tH * 3600) + (tM * 60);
+
+    let wH = safeNum(document.getElementById('editTimeWCH').value, 0);
+    let wM = safeNum(document.getElementById('editTimeWCM').value, 0);
+    let wSec = (wH * 3600) + (wM * 60);
+
+    let newSecMap = { Praca: pSec, Przerwa: prSec, Telefon: tSec, WC: wSec };
+    let isNight = (state.shifts[selectedModalDate] === '3');
+    let perSecRateBrutto = getHourlyRate(false, isNight) / 3600;
+    let newEarnedMap = {
+      Praca: pSec * perSecRateBrutto,
+      Przerwa: prSec * perSecRateBrutto,
+      Telefon: tSec * perSecRateBrutto,
+      WC: wSec * perSecRateBrutto
+    };
+
+    if (selectedModalDate === state.activeDayKey) {
+      state.seconds = { ...newSecMap };
+      state.earned = { ...newEarnedMap };
+    }
+    state.historySeconds[selectedModalDate] = { ...newSecMap };
+    state.historyEarned[selectedModalDate] = { ...newEarnedMap };
+
+    saveState();
+    updateUI();
+    closeModal('editDayTimeModal');
+  }
+
+  function changeMonth(direction) {
+    viewMonth += direction;
+    if (viewMonth > 11) {
+      viewMonth = 0;
+      viewYear++;
+    } else if (viewMonth < 0) {
+      viewMonth = 11;
+      viewYear--;
+    }
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    try {
+      const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+      document.getElementById('currentMonthTitle').textContent = `${monthNames[viewMonth]} ${viewYear}`;
+
+      let firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
+      let adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+      let totalDays = new Date(viewYear, viewMonth + 1, 0).getDate();
+      let container = document.getElementById('calDays');
+      container.innerHTML = '';
+
+      for (let i = 0; i < adjustedFirstDay; i++) {
+        let empty = document.createElement('div');
+        container.appendChild(empty);
+      }
+
+      let todayStr = getRealDateKey();
+      let mult = state.liveMode === 'netto' ? 0.72 : 1.0;
+
+      for (let day = 1; day <= totalDays; day++) {
+        let dayStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        let cell = document.createElement('div');
+        let isToday = (dayStr === todayStr);
+        let shift = state.shifts[dayStr];
+        let isHoliday = (shift === 'Urlop');
+
+        let dayEarnedMap = (dayStr === state.activeDayKey) ? state.earned : (state.historyEarned[dayStr] || null);
+        let daySecMap = (dayStr === state.activeDayKey) ? state.seconds : (state.historySeconds[dayStr] || null);
+        let miniBadgesHtml = '';
+
+        if (state.hideEarnings) {
+          if (daySecMap) {
+            categories.forEach(c => {
+              let s = safeNum(daySecMap[c.id], 0);
+              if (s > 0) {
+                let m = Math.round(s / 60);
+                let txt = m >= 60 ? `${(m/60).toFixed(1)}h` : `${m}m`;
+                miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000;">${txt}</span>`;
+              }
+            });
+          }
+          if (isHoliday && !miniBadgesHtml) {
+            miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff;">8.0h</span>`;
+          }
+        } else {
+          if (dayEarnedMap) {
+            categories.forEach(c => {
+              let val = safeNum(dayEarnedMap[c.id], 0) * mult;
+              if (val > 0) {
+                miniBadgesHtml += `<span class="mini-badge" style="background:${c.color}; color:#000;">${val.toFixed(0)} zł</span>`;
+              }
+            });
+          }
+          if (isHoliday && !miniBadgesHtml) {
+            let rate = getHourlyRate(false, false) * mult;
+            let urlopVal = rate * 8;
+            miniBadgesHtml = `<span class="mini-badge" style="background:#e040fb; color:#fff;">${urlopVal.toFixed(0)} zł</span>`;
+          }
+        }
+
+        cell.className = 'cal-day' + (isToday ? ' today' : '') + (isHoliday ? ' holiday' : '');
+        
+        let sLbl = '';
+        if (shift === '1') sLbl = 'I';
+        else if (shift === '2') sLbl = 'II';
+        else if (shift === '3') sLbl = 'III';
+        else if (isHoliday) sLbl = '🌴';
+
+        cell.innerHTML = `
+          <div class="day-top-info">
+            <span style="font-weight:bold; color: #fff;">${day}</span>
+            ${sLbl ? `<span class="shift-tag">${sLbl}</span>` : ''}
+          </div>
+          <div class="day-sub-sums">${miniBadgesHtml}</div>
+        `;
+
+        cell.onclick = () => {
+          selectedModalDate = dayStr;
+          document.getElementById('modalTitle').textContent = `Grafik na dzień: ${dayStr}`;
+          document.getElementById('dayModal').style.display = 'flex';
+        };
+        container.appendChild(cell);
+      }
+    } catch (e) {
+      console.error("Błąd renderowania kalendarza:", e);
+    }
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  function setDayShift(type) {
+    if (!selectedModalDate) return;
+    if (type === 'Wolne') {
+      delete state.shifts[selectedModalDate];
+    } else {
+      state.shifts[selectedModalDate] = type;
+      if (type === 'Urlop') {
+        let dailyBrutto = getHourlyRate(false, false) * 8;
+        if (selectedModalDate === state.activeDayKey) {
+          state.earned['Praca'] = dailyBrutto;
+          state.seconds['Praca'] = MAX_WORK_SECONDS;
+        }
+        state.historyEarned[selectedModalDate] = { Praca: dailyBrutto, Przerwa: 0, Telefon: 0, WC: 0 };
+        state.historySeconds[selectedModalDate] = { Praca: MAX_WORK_SECONDS, Przerwa: 0, Telefon: 0, WC: 0 };
+      } else if (type === '3' && selectedModalDate === state.activeDayKey) {
+        let newRate = getHourlyRate(false, true) / 3600;
+        categories.forEach(c => {
+          if (state.seconds[c.id] > 0) {
+            state.earned[c.id] = state.seconds[c.id] * newRate;
+          }
+        });
+      }
+    }
+    saveState();
+    updateUI();
+    closeModal('dayModal');
+  }
+
+  function updateUI() {
+    try {
+      let isNetto = (state.liveMode === 'netto');
+      let currentRate = getHourlyRate(isNetto);
+      document.getElementById('hourlyRate').textContent = currentRate.toFixed(2);
+      if (!document.getElementById('showPasswords').checked) {
+        document.getElementById('hourlyRate').style.webkitTextSecurity = 'disc';
+      }
+
+      let activeCat = state.activeCat || 'Praca';
+      let modeSuffix = isNetto ? ' (SZAC. NETTO)' : ' (BRUTTO)';
+      let mult = isNetto ? 0.72 : 1.0;
+
+      let activeEarned = safeNum(state.earned[activeCat], 0) * mult;
+      let activeSec = safeNum(state.seconds[activeCat], 0);
+
+      if (state.hideEarnings) {
+        document.getElementById('modeLabel').textContent = `CZAS CZYNNOŚCI: ${activeCat.toUpperCase()}`;
+        document.getElementById('totalEarned').textContent = formatTime(activeSec);
+        document.getElementById('rateWrapper').style.display = 'none';
+        document.getElementById('celebBox').style.display = 'none';
+        document.getElementById('modeSelectorBox').style.display = 'none';
+      } else {
+        document.getElementById('modeLabel').textContent = `ZAROBIONO NA: ${activeCat.toUpperCase()}${modeSuffix}`;
+        document.getElementById('totalEarned').textContent = activeEarned.toFixed(4) + ' PLN';
+        document.getElementById('rateWrapper').style.display = 'inline';
+        document.getElementById('celebBox').style.display = 'block';
+        document.getElementById('modeSelectorBox').style.display = 'flex';
+      }
+
+      document.getElementById('totalTime').textContent = formatTime(activeSec);
+
+      let activeCatObj = categories.find(c => c.id === activeCat) || categories[0];
+      let counterBox = document.getElementById('mainCounterBox');
+      if (counterBox) {
+        counterBox.style.background = `linear-gradient(135deg, ${activeCatObj.color}33, #000000)`;
+        counterBox.style.borderColor = activeCatObj.color;
+      }
+
+      let grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = '';
+      categories.forEach(c => {
+        let isSel = (state.activeCat === c.id);
+        let card = document.createElement('div');
+        card.className = 'cat-card' + (isSel ? ' active' : '');
+        if (isSel) card.style.borderColor = c.color;
+        card.onclick = () => selectCategory(c.id);
+
+        let catEarned = safeNum(state.earned[c.id], 0) * mult;
+        let catSec = safeNum(state.seconds[c.id], 0);
+        
+        let topValue = state.hideEarnings ? formatTime(catSec) : `${catEarned.toFixed(2)} zł`;
+        let subValue = state.hideEarnings ? `Czynność: ${c.id}` : formatTime(catSec);
+
+        card.innerHTML = `
+          <button class="edit-btn" onclick="openEditTimeModal('${c.id}', event)">✏️ Edytuj</button>
+          <div class="cat-title" style="color:${isSel ? '#fff' : '#ccc'}">${c.id.toUpperCase()}</div>
+          <div class="cat-money" style="color:${c.color}">${topValue}</div>
+          <div class="cat-time">${subValue}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      calcSummaries(mult);
+      renderCalendar();
+    } catch (e) {
+      console.error("Błąd aktualizacji UI:", e);
+    }
+  }
+
+  function calcSummaries(mult) {
+    let dayKey = state.activeDayKey;
+    let curTotalE = Object.values(state.earned).reduce((a, b) => a + safeNum(b, 0), 0);
+    let curTotalS = Object.values(state.seconds).reduce((a, b) => a + safeNum(b, 0), 0);
+
+    if (curTotalE > 0 || curTotalS > 0) {
+      state.historyEarned[dayKey] = { ...state.earned };
+      state.historySeconds[dayKey] = { ...state.seconds };
+    }
+
+    let allDaysEarned = {};
+    Object.keys(state.historyEarned).forEach(dKey => {
+      let mapE = state.historyEarned[dKey];
+      if (mapE && typeof mapE === 'object') {
+        allDaysEarned[dKey] = {
+          Praca: safeNum(mapE.Praca, 0),
+          Przerwa: safeNum(mapE.Przerwa, 0),
+          Telefon: safeNum(mapE.Telefon, 0),
+          WC: safeNum(mapE.WC, 0)
+        };
+      }
+    });
+
+    let allDaysSeconds = {};
+    Object.keys(state.historySeconds).forEach(dKey => {
+      let mapS = state.historySeconds[dKey];
+      if (mapS && typeof mapS === 'object') {
+        allDaysSeconds[dKey] = {
+          Praca: safeNum(mapS.Praca, 0),
+          Przerwa: safeNum(mapS.Przerwa, 0),
+          Telefon: safeNum(mapS.Telefon, 0),
+          WC: safeNum(mapS.WC, 0)
+        };
+      }
+    });
+
+    Object.keys(state.shifts).forEach(d => {
+      if (state.shifts[d] === 'Urlop' && !allDaysEarned[d]) {
+        let uRateBrutto = getHourlyRate(false, false) * 8;
+        allDaysEarned[d] = { Praca: uRateBrutto, Przerwa: 0, Telefon: 0, WC: 0 };
+        allDaysSeconds[d] = { Praca: 8 * 3600, Przerwa: 0, Telefon: 0, WC: 0 };
+      }
+    });
+
+    function aggregateDays(dateList) {
+      let totals = { 
+        earned: { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0, total: 0 },
+        seconds: { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0, total: 0 }
+      };
+      dateList.forEach(k => {
+        let dayMapE = allDaysEarned[k];
+        if (dayMapE) {
+          categories.forEach(c => {
+            let val = safeNum(dayMapE[c.id], 0) * mult;
+            totals.earned[c.id] += val;
+            totals.earned.total += val;
+          });
+        }
+        let dayMapS = allDaysSeconds[k];
+        if (dayMapS) {
+          categories.forEach(c => {
+            let sec = safeNum(dayMapS[c.id], 0);
+            totals.seconds[c.id] += sec;
+            totals.seconds.total += sec;
+          });
+        }
+      });
+      return totals;
+    }
+
+    let now = new Date();
+    let statsObj = { 
+      earned: { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0, total: 0 },
+      seconds: { Praca: 0, Przerwa: 0, Telefon: 0, WC: 0, total: 0 }
+    };
+    let titleText = '';
+
+    if (window.summaryType === 'week') {
+      let dOfWeek = now.getDay();
+      let baseMon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dOfWeek + (dOfWeek === 0 ? -6 : 1));
+      baseMon.setDate(baseMon.getDate() + (window.summaryOffset * 7));
+      baseMon.setHours(0, 0, 0, 0);
+      
+      let weekDays = [];
+      let tempD = new Date(baseMon);
+      for (let i = 0; i < 7; i++) {
+        let yr = tempD.getFullYear();
+        let mo = String(tempD.getMonth() + 1).padStart(2, '0');
+        let da = String(tempD.getDate()).padStart(2, '0');
+        weekDays.push(`${yr}-${mo}-${da}`);
+        tempD.setDate(tempD.getDate() + 1);
+      }
+      statsObj = aggregateDays(weekDays);
+      let endSun = new Date(baseMon);
+      endSun.setDate(endSun.getDate() + 6);
+      titleText = `Tydzień: ${baseMon.toLocaleDateString()} - ${endSun.toLocaleDateString()}`;
+
+    } else if (window.summaryType === 'month') {
+      let targetYear = now.getFullYear();
+      let targetMonth = now.getMonth() + window.summaryOffset;
+      while (targetMonth > 11) { targetMonth -= 12; targetYear++; }
+      while (targetMonth < 0) { targetMonth += 12; targetYear--; }
+
+      let allKeys = new Set([...Object.keys(allDaysEarned), ...Object.keys(allDaysSeconds)]);
+      let monthDays = [];
+      allKeys.forEach(k => {
+        let p = k.split('-');
+        if (p.length === 3 && parseInt(p[0]) === targetYear && parseInt(p[1]) - 1 === targetMonth) {
+          monthDays.push(k);
+        }
+      });
+      statsObj = aggregateDays(monthDays);
+      const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+      titleText = `Miesiąc: ${monthNames[targetMonth]} ${targetYear}`;
+
+    } else if (window.summaryType === 'year') {
+      let targetYear = now.getFullYear() + window.summaryOffset;
+      let allKeys = new Set([...Object.keys(allDaysEarned), ...Object.keys(allDaysSeconds)]);
+      let yearDays = [];
+      allKeys.forEach(k => {
+        let p = k.split('-');
+        if (p.length === 3 && parseInt(p[0]) === targetYear) {
+          yearDays.push(k);
+        }
+      });
+      statsObj = aggregateDays(yearDays);
+      titleText = `Rok: ${targetYear}`;
+    }
+
+    document.getElementById('summaryTitle').textContent = titleText;
+    
+    if (state.hideEarnings) {
+      document.getElementById('sumPeriodHeader').textContent = 'Łączny czas okresu';
+      document.getElementById('sumPeriodTotal').textContent = formatTime(statsObj.seconds.total);
+    } else {
+      document.getElementById('sumPeriodHeader').textContent = 'Suma okresu';
+      document.getElementById('sumPeriodTotal').textContent = safeNum(statsObj.earned.total, 0).toFixed(2) + ' zł';
+    }
+    
+    let periodHtml = '';
+    categories.forEach(c => {
+      let amt = safeNum(statsObj.earned[c.id], 0).toFixed(2);
+      let timeStr = formatTime(statsObj.seconds[c.id]);
+      
+      if (state.hideEarnings) {
+        periodHtml += `
+          <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
+            <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${timeStr}</span></div>
+          </div>
+        `;
+      } else {
+        periodHtml += `
+          <div style="margin: 6px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 4px;">
+            <div class="sum-row"><span style="color:${c.color}; font-weight:bold;">${c.id}:</span> <span>${amt} zł</span></div>
+            <div class="sum-time-sub">Czas: ${timeStr}</div>
+          </div>
+        `;
+      }
+    });
+    document.getElementById('sumPeriodDetails').innerHTML = periodHtml;
+  }
+
+  function exportBackup() {
+    const data = {
+      settings: localStorage.getItem('szambonurki_settings'),
+      state: localStorage.getItem('szambonurki_state')
+    };
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `szambonurki_kopia_${getRealDateKey()}.json`;
+    a.click();
+  }
+
+  function importBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data.settings) localStorage.setItem('szambonurki_settings', data.settings);
+        if (data.state) localStorage.setItem('szambonurki_state', data.state);
+        loadSettings();
+        updateUI();
+        alert('Kopia zapasowa została pomyślnie wczytana!');
+      } catch (err) {
+        alert('Błąd podczas wczytywania pliku kopii.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  loadSettings();
+  updateUI();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+</script>
+
+</body>
+</html>
